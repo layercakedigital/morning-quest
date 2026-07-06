@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#5b8dd6">
-<title>Morning Quest</title>
+<title>Daily Quest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -204,7 +204,7 @@
 
   <div class="banner">
     <div class="crown">👑</div>
-    <div class="title-plate"><h1>MORNING QUEST</h1></div>
+    <div class="title-plate"><h1>DAILY QUEST</h1></div>
     <div><span class="subband"><span class="spark">✦</span> PREPARE. POWER UP. PLAY. <span class="spark">✦</span></span></div>
   </div>
 
@@ -380,7 +380,7 @@
       var today = ymd(new Date());
       if(state.notifiedDate !== today){   // notify once per completion; re-armed by Clear/new day
         state.notifiedDate = today; save();
-        var msg = "Finished all morning quests! 🎉";
+        var msg = "Finished all daily quests! 🎉";
         if(state.streak>0) msg += " "+state.streak+"-day streak (+"+streakBonus(state.streak)+" bonus XP).";
         var ms = milestoneFor(state.streak);
         if(ms) msg += " "+ms;
@@ -462,7 +462,7 @@
   // Streak was lost since last visit → tell the parent once, then persist so it won't repeat.
   if(state.broke){
     save();
-    notify("Streak Reset", "A day was missed — the morning-quest streak is back to 0. Might be worth a nudge! 💔", "broken_heart", "default");
+    notify("Streak Reset", "A day was missed — the daily-quest streak is back to 0. Might be worth a nudge! 💔", "broken_heart", "default");
   }
 })();
 </script>

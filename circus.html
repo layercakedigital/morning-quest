@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a0730">
+<title>Daily Quest — Digital Circus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2a1c3a; --sub:#6b4f8e;
+    --tile:#fbf1d8; --tile-b:#3a2352;
+    --red:#ff3b6b; --yellow:#ffd23f; --teal:#2ee6c9; --magenta:#ff4fd8; --blue:#4d8cff;
+    --xp:#ff4fd8; --gold:#ffd23f; --green:#3ddc84; --greentxt:#9dffc8;
+    --panel:#26103f; --panel2:#3a1c5e;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; overflow-x:hidden;}
+  body{
+    font-family:'Baloo 2',system-ui,sans-serif; color:var(--ink);
+    min-height:100vh; position:relative;
+    display:flex; justify-content:center; padding:14px 10px 60px;
+    background:#12021f;
+  }
+
+  /* ===== Animated background ===== */
+  .bg{position:fixed; inset:0; z-index:-1; overflow:hidden;}
+  .void{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #6a1a8e 0%, #3a0a5e 40%, #1a0432 75%, #0d0120 100%);
+  }
+  /* twinkling pixel stars */
+  .stars{position:absolute; inset:0; animation:drift 40s linear infinite;}
+  .stars::before, .stars::after{
+    content:""; position:absolute; inset:-50%;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 70% 20%, #ffe08a 50%, transparent 51%),
+      radial-gradient(2px 2px at 40% 70%, var(--teal) 50%, transparent 51%),
+      radial-gradient(2px 2px at 85% 60%, var(--magenta) 50%, transparent 51%),
+      radial-gradient(2px 2px at 55% 45%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 10% 80%, var(--yellow) 50%, transparent 51%),
+      radial-gradient(2px 2px at 90% 85%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 30% 10%, var(--blue) 50%, transparent 51%);
+    background-size:300px 300px; opacity:.8;
+    animation:twinkle 3.5s steps(2) infinite;
+  }
+  .stars::after{background-position:150px 150px; animation-delay:1.7s;}
+  @keyframes twinkle{0%,100%{opacity:.35}50%{opacity:.9}}
+  @keyframes drift{from{transform:translateY(0)}to{transform:translateY(-40px)}}
+
+  /* sweeping spotlights */
+  .spot{position:absolute; top:-30%; width:60vw; height:160vh; mix-blend-mode:screen; opacity:.35; transform-origin:top center;}
+  .spot.a{left:8%; background:linear-gradient(to bottom, rgba(255,210,63,.55), transparent 70%); animation:sweepA 9s ease-in-out infinite;}
+  .spot.b{right:8%; background:linear-gradient(to bottom, rgba(46,230,201,.5), transparent 70%); animation:sweepB 11s ease-in-out infinite;}
+  @keyframes sweepA{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(12deg)}}
+  @keyframes sweepB{0%,100%{transform:rotate(13deg)}50%{transform:rotate(-11deg)}}
+
+  /* drifting pixel clouds (Mario style) */
+  .cloud{position:absolute; width:64px; height:26px; background:#e9d5ff; border-radius:14px; opacity:.75;
+    box-shadow:16px -10px 0 0 #e9d5ff, 34px -4px 0 0 #e9d5ff, -14px 2px 0 0 #e9d5ff,
+      0 14px 0 0 #d9b8ff, 26px 12px 0 0 #d9b8ff; image-rendering:pixelated;}
+  .cloud.c1{top:16%; animation:float1 34s linear infinite;}
+  .cloud.c2{top:40%; transform:scale(.7); animation:float2 46s linear infinite;}
+  .cloud.c3{top:62%; transform:scale(1.15); opacity:.5; animation:float1 60s linear infinite;}
+  @keyframes float1{from{left:-90px}to{left:110%}}
+  @keyframes float2{from{left:110%}to{left:-90px}}
+
+  /* checkerboard floor with perspective */
+  .floor{position:absolute; left:-20%; right:-20%; bottom:0; height:34vh;
+    background-image:
+      linear-gradient(45deg, rgba(255,79,216,.30) 25%, transparent 25%, transparent 75%, rgba(255,79,216,.30) 75%),
+      linear-gradient(45deg, rgba(255,79,216,.30) 25%, transparent 25%, transparent 75%, rgba(255,79,216,.30) 75%);
+    background-size:52px 52px; background-position:0 0, 26px 26px;
+    transform:perspective(300px) rotateX(62deg); transform-origin:bottom center;
+    animation:floorscroll 6s linear infinite; opacity:.9;
+    mask-image:linear-gradient(to top, #000 40%, transparent);
+    -webkit-mask-image:linear-gradient(to top, #000 40%, transparent);
+  }
+  @keyframes floorscroll{from{background-position:0 0, 26px 26px}to{background-position:0 52px, 26px 78px}}
+
+  /* balloons layer */
+  #balloons{position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden;}
+  .balloon{position:absolute; bottom:-80px; width:38px; height:46px; border-radius:50% 50% 48% 48%;
+    pointer-events:auto; cursor:pointer; will-change:transform;
+    box-shadow:inset -6px -6px 0 rgba(0,0,0,.12), inset 6px 4px 0 rgba(255,255,255,.35);}
+  .balloon::after{content:""; position:absolute; left:50%; bottom:-9px; width:2px; height:12px; background:rgba(255,255,255,.6); transform:translateX(-50%);}
+  .balloon:active{transform:scale(.9);}
+  @keyframes rise{to{transform:translateY(-118vh) rotate(var(--sway));}}
+
+  /* bunting flags */
+  .bunting{position:fixed; top:0; left:0; right:0; height:26px; z-index:4; display:flex; justify-content:center; gap:0; pointer-events:none;}
+  .flag{width:0; height:0; border-left:13px solid transparent; border-right:13px solid transparent; border-top:20px solid var(--red); filter:drop-shadow(0 1px 0 rgba(0,0,0,.2));}
+  .flag:nth-child(4n+2){border-top-color:var(--yellow);}
+  .flag:nth-child(4n+3){border-top-color:var(--teal);}
+  .flag:nth-child(4n){border-top-color:var(--magenta);}
+
+  .wrap{width:100%; max-width:520px; position:relative; z-index:6;}
+
+  /* ===== Mascot ===== */
+  .stage{text-align:center; margin:14px 0 2px; position:relative;}
+  .mascot{width:96px; height:96px; cursor:pointer; display:inline-block; animation:bob 2.6s ease-in-out infinite; filter:drop-shadow(0 6px 6px rgba(0,0,0,.35));}
+  .mascot:active{animation:none;}
+  .mascot.pop{animation:pop .5s ease;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes pop{0%{transform:scale(1)}30%{transform:scale(1.18) rotate(-6deg)}60%{transform:scale(.94) rotate(5deg)}100%{transform:scale(1)}}
+  .bubble{
+    display:inline-block; max-width:280px; margin:6px auto 0; padding:8px 14px;
+    background:#fff; color:var(--ink); font-weight:800; font-size:14px;
+    border-radius:14px; position:relative; box-shadow:0 4px 0 rgba(0,0,0,.25);
+    opacity:0; transform:translateY(6px) scale(.96); transition:.2s; pointer-events:none;
+  }
+  .bubble.show{opacity:1; transform:translateY(0) scale(1);}
+  .bubble::after{content:""; position:absolute; top:-8px; left:50%; transform:translateX(-50%);
+    border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:8px solid #fff;}
+
+  /* ===== Title (glitch marquee) ===== */
+  .titlewrap{text-align:center; margin-top:6px;}
+  .title-plate{
+    display:inline-block;
+    background:
+      repeating-linear-gradient(135deg, var(--red) 0 14px, #fff5f7 14px 28px);
+    border:4px solid #fff; border-radius:14px; padding:12px 24px 10px;
+    box-shadow:0 0 0 4px #3a1c5e, 0 0 26px rgba(255,79,216,.6), 0 8px 0 #2a0f45;
+  }
+  .title-plate h1{
+    margin:0; font-family:'Press Start 2P',cursive; font-size:24px; color:#fff;
+    letter-spacing:1px; text-shadow:2px 2px 0 #ff3b6b, -2px -2px 0 #2ee6c9;
+    animation:glitch 4s steps(1) infinite;
+  }
+  @keyframes glitch{0%,92%,100%{text-shadow:2px 2px 0 #ff3b6b,-2px -2px 0 #2ee6c9}
+    94%{text-shadow:-3px 0 0 #ff3b6b,3px 0 0 #2ee6c9; transform:translateX(2px)}
+    96%{text-shadow:3px 0 0 #ffd23f,-3px 0 0 #4d8cff; transform:translateX(-2px)}}
+  .subband{
+    display:inline-block; margin-top:8px; background:var(--panel); border:2px solid var(--magenta);
+    color:#fff; font-weight:800; letter-spacing:1px; padding:5px 16px; font-size:12px; border-radius:20px;
+    box-shadow:0 0 14px rgba(255,79,216,.4);
+  }
+  .subband .spark{color:var(--yellow);}
+  .intro{text-align:center; font-weight:700; color:#f4e4ff; margin:12px 6px 4px; font-size:15px; text-shadow:0 1px 3px rgba(0,0,0,.4);}
+
+  /* ===== Streak strip ===== */
+  .streak{
+    display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+    margin:10px 4px 0; padding:9px 12px; text-align:center;
+    background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--teal);
+    border-radius:14px; color:#fff; font-weight:800; box-shadow:0 0 16px rgba(46,230,201,.25);
+  }
+  .streak.broken{border-color:var(--red); box-shadow:0 0 16px rgba(255,59,107,.3);}
+  .streak .flame{font-size:22px; line-height:1;}
+  .streak .num{font-family:'Press Start 2P',cursive; font-size:15px; color:var(--yellow);}
+  .streak .lbl{font-size:12.5px; color:#e6d4ff;}
+  .streak .bonus{font-size:12.5px; color:var(--greentxt);}
+  .streak .best{font-size:12px; color:#ffd9f2;}
+
+  /* ===== Playbill / quests ===== */
+  .scroll{
+    background:linear-gradient(#fdf5e2,#f6e7c4); border:4px solid #fff; border-radius:18px;
+    padding:14px 12px; margin-top:10px; box-shadow:0 0 0 4px var(--red), 0 12px 26px rgba(0,0,0,.4);
+  }
+  .xpwrap{margin:2px 4px 12px;}
+  .xprow{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;}
+  .xprow b{font-family:'Press Start 2P',cursive; font-size:12px; color:var(--red);}
+  .xprow span{font-weight:800; color:var(--sub); font-size:14px;}
+  .xptrack{height:22px; background:#e6d3f2; border:3px solid #b98fd6; border-radius:12px; overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,.2);}
+  .xpfill{height:100%; width:0%; border-radius:9px;
+    background:linear-gradient(90deg,var(--yellow),var(--magenta),var(--teal));
+    background-size:200% 100%; animation:rainbow 4s linear infinite;
+    transition:width .45s cubic-bezier(.3,1.2,.5,1); box-shadow:0 0 10px rgba(255,79,216,.6);}
+  @keyframes rainbow{to{background-position:200% 0}}
+
+  .quest{
+    display:flex; align-items:center; gap:10px; background:linear-gradient(var(--tile),#f2e2bf);
+    border:3px solid var(--tile-b); border-radius:12px; padding:9px 10px; margin:9px 2px;
+    cursor:pointer; user-select:none; box-shadow:0 3px 0 rgba(0,0,0,.15);
+    transition:transform .08s ease, opacity .2s;
+  }
+  .quest:active{transform:scale(.98);}
+  .quest .emoji{font-size:26px; width:38px; text-align:center; flex:none;}
+  .quest .txt{flex:1; min-width:0;}
+  .quest .name{font-weight:800; font-size:16px; color:var(--ink); line-height:1.1; text-transform:uppercase; letter-spacing:.3px;}
+  .quest .name .flag2{font-size:10px; color:var(--magenta); font-weight:800; letter-spacing:.5px;}
+  .quest .desc{font-size:12.5px; color:var(--sub); font-weight:600; line-height:1.2;}
+  .quest .xp{font-family:'Press Start 2P',cursive; font-size:11px; color:var(--xp); flex:none; white-space:nowrap;}
+  .box{flex:none; width:30px; height:30px; border-radius:7px; border:3px solid var(--magenta); background:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; color:#fff; transition:.15s;}
+  .quest.done{opacity:.8;}
+  .quest.done .name, .quest.done .desc{text-decoration:line-through; text-decoration-color:rgba(42,28,58,.5);}
+  .quest.done .box{background:var(--green); border-color:#22a862; transform:scale(1.05);}
+  .quest.done .box::after{content:"✓";}
+
+  .footer{display:flex; gap:10px; align-items:stretch; margin:14px 4px 2px;}
+  .reward{flex:1; background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--yellow); border-radius:12px; color:#fff; text-align:center; padding:10px 8px; box-shadow:0 0 14px rgba(255,210,63,.25);}
+  .reward .lbl{font-family:'Press Start 2P',cursive; font-size:10px; color:var(--yellow); letter-spacing:.5px;}
+  .reward .big{font-family:'Press Start 2P',cursive; font-size:16px; color:var(--magenta); margin:8px 0 4px;}
+  .reward .unlock{font-weight:800; font-size:12px; color:var(--greentxt);}
+  .cheer{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:2px solid var(--teal); border-radius:12px; text-align:center; padding:10px; font-weight:800; color:var(--ink); font-size:14px;}
+  .cheer .tent{font-size:32px; line-height:1;}
+
+  .reset{display:block; margin:16px auto 0; background:none; border:none; color:#e9d8ff; font-weight:700; font-size:13px; opacity:.85; text-decoration:underline; cursor:pointer;}
+
+  /* Win overlay */
+  .overlay{position:fixed; inset:0; background:rgba(12,2,30,.86); display:none; align-items:center; justify-content:center; z-index:80; padding:24px; text-align:center;}
+  .overlay.show{display:flex;}
+  .winbox{background:linear-gradient(#fdf5e2,#f4e2c0); border:5px solid var(--yellow); border-radius:20px; padding:24px 22px; max-width:360px; box-shadow:0 0 44px rgba(255,210,63,.7);}
+  .winbox .d{font-size:56px;}
+  .winbox h2{font-family:'Press Start 2P',cursive; font-size:17px; color:var(--red); margin:8px 0; text-shadow:2px 2px 0 #ffd9a0;}
+  .winbox p{font-weight:800; color:var(--sub); font-size:15px; margin:6px 0 16px;}
+  .winbox .go{font-family:'Baloo 2'; font-weight:800; font-size:16px; color:#fff; background:linear-gradient(var(--magenta),#c026a8); border:3px solid #9a1f86; border-radius:12px; padding:11px 24px; cursor:pointer; box-shadow:0 4px 0 #71135f;}
+
+  .confetti{position:fixed; width:9px; height:14px; z-index:90; pointer-events:none; border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="void"></div>
+  <div class="stars"></div>
+  <div class="spot a"></div>
+  <div class="spot b"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="floor"></div>
+</div>
+<div class="bunting" id="bunting"></div>
+<div id="balloons"></div>
+
+<div class="wrap">
+
+  <div class="stage">
+    <svg class="mascot" id="mascot" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-label="mascot">
+      <!-- top hat -->
+      <rect x="5" y="0" width="6" height="1" fill="#2a1c3a"/>
+      <rect x="6" y="1" width="4" height="2" fill="#ff3b6b"/>
+      <rect x="6" y="2" width="4" height="1" fill="#fff5f7"/>
+      <rect x="4" y="3" width="8" height="1" fill="#2a1c3a"/>
+      <!-- star head -->
+      <rect x="6" y="4" width="4" height="1" fill="#ffd23f"/>
+      <rect x="4" y="5" width="8" height="2" fill="#ffd23f"/>
+      <rect x="3" y="7" width="10" height="2" fill="#ffd23f"/>
+      <rect x="4" y="9" width="8" height="1" fill="#ffd23f"/>
+      <rect x="5" y="10" width="2" height="1" fill="#ffd23f"/>
+      <rect x="9" y="10" width="2" height="1" fill="#ffd23f"/>
+      <!-- eyes -->
+      <rect x="5" y="6" width="1" height="2" fill="#2a1c3a"/>
+      <rect x="10" y="6" width="1" height="2" fill="#2a1c3a"/>
+      <!-- cheeks -->
+      <rect x="4" y="8" width="1" height="1" fill="#ff8ac0"/>
+      <rect x="11" y="8" width="1" height="1" fill="#ff8ac0"/>
+      <!-- smile -->
+      <rect x="6" y="8" width="4" height="1" fill="#c0392b"/>
+      <!-- little bowtie -->
+      <rect x="6" y="11" width="1" height="1" fill="#2ee6c9"/>
+      <rect x="9" y="11" width="1" height="1" fill="#2ee6c9"/>
+      <rect x="7" y="11" width="2" height="1" fill="#1fa892"/>
+    </svg>
+    <div class="bubble" id="bubble"></div>
+  </div>
+
+  <div class="titlewrap">
+    <div class="title-plate"><h1>DAILY QUEST</h1></div>
+    <div><span class="subband"><span class="spark">✦</span> STEP RIGHT UP! <span class="spark">✦</span></span></div>
+  </div>
+
+  <div class="intro">Complete your quests to unlock all-day tech! 💜</div>
+
+  <div class="streak" id="streak"></div>
+
+  <div class="scroll">
+    <div class="xpwrap">
+      <div class="xprow"><b>QUEST XP</b><span id="xplabel">0 / 165 XP</span></div>
+      <div class="xptrack"><div class="xpfill" id="xpfill"></div></div>
+    </div>
+    <div id="quests"></div>
+  </div>
+
+  <div class="footer">
+    <div class="reward">
+      <div class="lbl">GRAND PRIZE</div>
+      <div class="big">200 XP</div>
+      <div class="unlock">🎮 ALL-DAY TECH UNLOCKED!</div>
+    </div>
+    <div class="cheer">
+      <div class="tent">🎪</div>
+      <div id="cheertxt">The show can't start without you!</div>
+    </div>
+  </div>
+
+  <button class="reset" id="reset">↺ Clear today’s checkmarks</button>
+  <button class="reset" id="testnotify" style="opacity:.6; font-size:12px;">🔔 Send test notification</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="winbox">
+    <div class="d">🎪✨</div>
+    <h2>SHOW COMPLETE!</h2>
+    <p id="winmsg">200 XP earned — All-Day Tech Unlocked! Take a bow, superstar. 💜</p>
+    <button class="go" id="closewin">🎮 Let's Play!</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var QUESTS = [
+    {e:"🪥", n:"Brush Your Teeth",   d:"Keep that smile legendary.",        xp:10},
+    {e:"🧹", n:"Brush Your Hair",    d:"Tame the mane!",                     xp:10},
+    {e:"🧴", n:"Put On Deodorant",   d:"Stay fresh. Be your best.",          xp:10},
+    {e:"👕", n:"Change Your Clothes", d:"New day, new vibes.",  xp:10, flag:"BONUS"},
+    {e:"📖", n:"Read For 30 Minutes", d:"Feed your mind. Level up.",         xp:25},
+    {e:"🛏️", n:"Make Your Bed",      d:"Small effort, big impact.",          xp:15},
+    {e:"🫧", n:"Do The Dishes",      d:"Be a hero. Leave no mess behind.",   xp:20},
+    {e:"🧺", n:"Fold Laundry",       d:"Tidy now, thank yourself later.", xp:15, flag:"IF AVAILABLE"},
+    {e:"🎹", n:"Piano Practice — 15 Min", d:"Practice makes progress. Keep the music alive!", xp:20},
+    {e:"🎨", n:"Be A Creator",       d:"Create and publish something today! Share your gift with the world.", xp:30}
+  ];
+  var GOAL = QUESTS.reduce(function(s,q){return s+q.xp;},0);
+  var KEY = "dailyQuest";
+  var CHEERS = ["The show can't start without you!","Warming up the big top… 🎪","Dazzling, superstar! ⭐",
+                "The crowd goes wild! 🎉","One more trick to go! 🎟️","BRAVO! Encore! 🎭"];
+
+  // ---- date helpers ----
+  function pad(n){ return (n<10?'0':'')+n; }
+  function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function parseYmd(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function dayDiff(a,b){ return Math.round((parseYmd(a)-parseYmd(b))/86400000); }
+
+  function streakBonus(s){ return s>0 ? s*10 : 0; }
+  function milestoneFor(s){
+    if(s===3)  return "🔥 3-Day Streak — On Fire badge!";
+    if(s===7)  return "🏅 7-Day Streak — Ringmaster!";
+    if(s===14) return "⚡ 14-Day Streak — Headliner!";
+    if(s===30) return "👑 30-Day Streak — Circus Legend!";
+    if(s>30 && s%10===0) return "🌟 "+s+"-Day Streak — Legendary!";
+    return "";
+  }
+
+  // ---- parent notifications (same channel as v1) ----
+  var NOTIFY = {
+    ntfyTopic: "mq-lcd-9f4k2x7q",   // subscribe to this in the ntfy app
+    slackWebhook: ""
+  };
+  function notify(title, message, tags, priority){
+    var safeTitle = String(title).replace(/[^\x00-\xFF]/g, '').trim() || 'Daily Quest';
+    if(NOTIFY.ntfyTopic){
+      try{ fetch('https://ntfy.sh/'+NOTIFY.ntfyTopic, {method:'POST', body:message,
+        headers:{ 'Title':safeTitle, 'Tags':tags||'', 'Priority':priority||'default' }}); }catch(e){}
+    }
+    if(NOTIFY.slackWebhook){
+      try{ fetch(NOTIFY.slackWebhook, {method:'POST', mode:'no-cors',
+        headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+        body:'payload='+encodeURIComponent(JSON.stringify({text:title+' — '+message}))}); }catch(e){}
+    }
+  }
+
+  var state = load();
+  var qEl = document.getElementById('quests');
+
+  function load(){
+    var s;
+    try{ s = JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ s=null; }
+    if(!s) s={};
+    if(!s.done) s.done={};
+    if(typeof s.streak!=='number') s.streak=0;
+    if(typeof s.best!=='number')   s.best=0;
+    s.lastComplete = s.lastComplete || null;
+    s.notifiedDate = s.notifiedDate || null;
+    s.broke = false;
+    var today = ymd(new Date());
+    if(s.day !== today){ s.done={}; s.day=today; }
+    if(s.lastComplete && s.streak>0 && dayDiff(today, s.lastComplete) >= 2){ s.streak = 0; s.broke = true; }
+    return s;
+  }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  function render(){
+    qEl.innerHTML = "";
+    QUESTS.forEach(function(q,i){
+      var done = !!state.done[i];
+      var row = document.createElement('div');
+      row.className = "quest"+(done?" done":"");
+      row.innerHTML =
+        '<div class="emoji">'+q.e+'</div>'+
+        '<div class="txt"><div class="name">'+q.n+(q.flag?' <span class="flag2">('+q.flag+')</span>':'')+'</div>'+
+        '<div class="desc">'+q.d+'</div></div>'+
+        '<div class="xp">+'+q.xp+' XP</div><div class="box"></div>';
+      row.addEventListener('click', function(){ toggle(i); });
+      qEl.appendChild(row);
+    });
+    updateXP(); renderStreak();
+  }
+
+  function renderStreak(){
+    var el = document.getElementById('streak');
+    var s = state.streak||0, best = state.best||0;
+    var bestTag = best>0 ? '<span class="best">🏆 Best: '+best+'</span>' : '';
+    if(s>0){
+      el.className = 'streak';
+      el.innerHTML = '<span class="flame">🔥</span><span class="num">'+s+'</span><span class="lbl">day streak</span>'+
+        '<span class="bonus">+'+streakBonus(s)+' bonus XP</span>'+bestTag;
+    } else if(state.broke){
+      el.className = 'streak broken';
+      el.innerHTML = '<span class="flame">💔</span><span class="lbl">Streak reset — finish all quests today to start a new one! 💪</span>'+bestTag;
+    } else {
+      el.className = 'streak';
+      el.innerHTML = '<span class="flame">🔥</span><span class="lbl">Finish all quests today to start your streak!</span>'+bestTag;
+    }
+  }
+
+  function toggle(i){
+    var wasComplete = isComplete();
+    state.done[i] = !state.done[i]; save();
+    qEl.children[i].classList.toggle('done', !!state.done[i]);
+    updateXP();
+    if(!wasComplete && isComplete()){
+      var r = awardStreak(); renderStreak(); celebrate(r);
+      var today = ymd(new Date());
+      if(state.notifiedDate !== today){
+        state.notifiedDate = today; save();
+        var msg = "Finished all daily quests! 🎉";
+        if(state.streak>0) msg += " "+state.streak+"-day streak (+"+streakBonus(state.streak)+" bonus XP).";
+        var ms = milestoneFor(state.streak); if(ms) msg += " "+ms;
+        notify("Show Complete", msg, "tada,circus_tent", "high");
+      }
+    }
+  }
+
+  function awardStreak(){
+    var today = ymd(new Date());
+    if(state.lastComplete === today){ return {streak:state.streak, bonus:streakBonus(state.streak), ms:""}; }
+    if(state.lastComplete && dayDiff(today, state.lastComplete) === 1){ state.streak += 1; }
+    else { state.streak = 1; }
+    state.lastComplete = today; state.broke = false;
+    if(state.streak > state.best) state.best = state.streak;
+    save();
+    return {streak:state.streak, bonus:streakBonus(state.streak), ms:milestoneFor(state.streak)};
+  }
+
+  function total(){ var t=0; QUESTS.forEach(function(q,i){ if(state.done[i]) t+=q.xp; }); return t; }
+  function isComplete(){ return QUESTS.every(function(q,i){ return state.done[i]; }); }
+
+  function updateXP(){
+    var t = total();
+    document.getElementById('xpfill').style.width = Math.min(100, Math.round(t/GOAL*100))+"%";
+    document.getElementById('xplabel').textContent = t+" / "+GOAL+" XP";
+    var doneCount = QUESTS.filter(function(q,i){return state.done[i];}).length;
+    var idx = Math.min(CHEERS.length-1, doneCount);
+    if(isComplete()) idx = CHEERS.length-1;
+    document.getElementById('cheertxt').textContent = CHEERS[idx];
+  }
+
+  function celebrate(r){
+    var p = document.getElementById('winmsg');
+    if(p && r){
+      var line = '200 XP earned — All-Day Tech Unlocked!';
+      if(r.streak>0) line += ' 🔥 '+r.streak+'-day streak (+'+r.bonus+' bonus XP).';
+      if(r.ms) line += ' '+r.ms;
+      line += ' Take a bow! 💜';
+      p.textContent = line;
+    }
+    document.getElementById('overlay').classList.add('show');
+    for(var i=0;i<120;i++) confetti(window.innerWidth*Math.random(), -10);
+  }
+  function confetti(x,y){
+    var c = document.createElement('div'); c.className='confetti';
+    var colors=['#ff3b6b','#ffd23f','#2ee6c9','#ff4fd8','#4d8cff','#3ddc84'];
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=x+'px'; c.style.top=y+'px';
+    var dur=2.4+Math.random()*2, dx=(Math.random()*200-100);
+    c.style.transition='transform '+dur+'s linear, opacity '+dur+'s linear';
+    document.body.appendChild(c);
+    requestAnimationFrame(function(){
+      c.style.transform='translate('+dx+'px,'+(window.innerHeight+40)+'px) rotate('+(Math.random()*720-360)+'deg)';
+      c.style.opacity='0';
+    });
+    setTimeout(function(){ c.remove(); }, dur*1000+100);
+  }
+
+  // ---- bunting flags ----
+  (function(){
+    var b=document.getElementById('bunting'), n=Math.ceil(window.innerWidth/26)+2;
+    for(var i=0;i<n;i++){ var f=document.createElement('div'); f.className='flag'; b.appendChild(f); }
+  })();
+
+  // ---- tiny WebAudio pop ----
+  var actx=null;
+  function pop(){
+    try{
+      actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+      var o=actx.createOscillator(), g=actx.createGain();
+      o.type='triangle'; o.frequency.setValueAtTime(700,actx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(180,actx.currentTime+.12);
+      g.gain.setValueAtTime(.18,actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.14);
+      o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+.15);
+    }catch(e){}
+  }
+
+  // ---- floating clickable balloons ----
+  var balloonLayer=document.getElementById('balloons');
+  var balloonColors=['#ff3b6b','#ffd23f','#2ee6c9','#ff4fd8','#4d8cff','#3ddc84'];
+  function spawnBalloon(){
+    if(document.hidden) return;
+    if(balloonLayer.children.length>4) return;
+    var b=document.createElement('div'); b.className='balloon';
+    b.style.background=balloonColors[Math.floor(Math.random()*balloonColors.length)];
+    b.style.left=(6+Math.random()*84)+'vw';
+    var dur=9+Math.random()*6;
+    b.style.setProperty('--sway',(Math.random()*30-15)+'deg');
+    b.style.animation='rise '+dur+'s linear forwards';
+    b.addEventListener('click', function(ev){
+      pop();
+      var rect=b.getBoundingClientRect();
+      for(var i=0;i<14;i++) confetti(rect.left+rect.width/2, rect.top+rect.height/2);
+      b.remove();
+    });
+    b.addEventListener('animationend', function(){ b.remove(); });
+    balloonLayer.appendChild(b);
+  }
+  setInterval(spawnBalloon, 2600);
+  setTimeout(spawnBalloon, 800);
+
+  // ---- mascot interaction ----
+  var mascot=document.getElementById('mascot'), bubble=document.getElementById('bubble'), bubbleTimer=null;
+  var LINES=["Step right up, superstar! ⭐","The big top believes in you! 🎪","Ta-daaa! You've got this! ✨",
+             "Every quest is a trick mastered! 🎟️","You're the main event! 🎭","Pop a balloon for luck! 🎈",
+             "Encore! Encore! 🎉"];
+  function say(txt){
+    bubble.textContent=txt; bubble.classList.add('show');
+    mascot.classList.remove('pop'); void mascot.offsetWidth; mascot.classList.add('pop');
+    clearTimeout(bubbleTimer);
+    bubbleTimer=setTimeout(function(){ bubble.classList.remove('show'); }, 2600);
+  }
+  mascot.addEventListener('click', function(){ say(LINES[Math.floor(Math.random()*LINES.length)]); });
+
+  // ---- buttons ----
+  document.getElementById('closewin').addEventListener('click', function(){ document.getElementById('overlay').classList.remove('show'); });
+  document.getElementById('reset').addEventListener('click', function(){
+    if(confirm('Clear today’s checkmarks? (Your streak and best score are kept.)')){
+      state.done={}; state.day=ymd(new Date()); state.notifiedDate=null; save(); render();
+    }
+  });
+  var tn=document.getElementById('testnotify');
+  if(tn){ tn.addEventListener('click', function(){
+    notify("Test Alert","ntfy is connected! You'll get a ping like this when the show is complete. 🎉","bell","high");
+    alert("Test sent! Check your phone. If nothing arrives, make sure the ntfy app is subscribed to the exact topic and notifications are allowed.");
+  }); }
+
+  render();
+  setTimeout(function(){ say("Welcome to the Daily Quest! 🎪"); }, 700);
+
+  if(state.broke){
+    save();
+    notify("Streak Reset","A day was missed — the daily-quest streak is back to 0. Might be worth a nudge! 💔","broken_heart","default");
+  }
+})();
+</script>
+</body>
+</html>
