@@ -605,4 +605,11 @@
     alert("Test sent! Check your phone. If nothing arrives, make sure the ntfy app is subscribed to the exact topic and notifications are allowed.");
   }); }
 
-  r
+  render();
+
+  if(state.broke){ save(); notify("Streak Reset","A day was missed — the daily-quest streak is back to 0. Might be worth a nudge! 💔","broken_heart","default"); }
+})();
+</script>
+</body>
+</html>
+<!-- end -->
