@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e24">
+<title>Daily Quest — Virtual Stage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#39c5bb; --cyan:#41e0d8; --pink:#ff5fa2; --purple:#b06fe6; --gold:#ffd23f; --blue:#6f9bff;
+    --ink:#eaf6ff; --sub:#9fb3d8;
+    --xp:#ff5fa2; --green:#3ddc84; --greentxt:#9dffc8;
+    --panel:#141a3a; --panel2:#1d2650; --void:#0a0e24;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; overflow-x:hidden;}
+  body{font-family:'Baloo 2',system-ui,sans-serif; color:var(--ink); min-height:100vh; position:relative;
+    display:flex; justify-content:center; padding:14px 10px 70px; background:var(--void);}
+
+  /* ===== Background ===== */
+  .bg{position:fixed; inset:0; z-index:-1; overflow:hidden;}
+  .void{position:absolute; inset:0; background:radial-gradient(120% 90% at 50% 0%, #1b2a5e 0%, #131a3a 45%, #0a0e24 80%);}
+  .scan{position:absolute; inset:0; opacity:.16; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.5) 0 1px, transparent 1px 3px); animation:scanmove 8s linear infinite;}
+  @keyframes scanmove{from{background-position:0 0}to{background-position:0 60px}}
+  .stars{position:absolute; inset:0; animation:drift 40s linear infinite;}
+  .stars::before, .stars::after{content:""; position:absolute; inset:-50%;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, var(--cyan) 50%, transparent 51%),
+      radial-gradient(2px 2px at 70% 20%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 40% 70%, var(--pink) 50%, transparent 51%),
+      radial-gradient(2px 2px at 85% 60%, var(--teal) 50%, transparent 51%),
+      radial-gradient(2px 2px at 55% 45%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 10% 80%, var(--purple) 50%, transparent 51%),
+      radial-gradient(2px 2px at 90% 85%, var(--cyan) 50%, transparent 51%),
+      radial-gradient(2px 2px at 30% 10%, var(--blue) 50%, transparent 51%);
+    background-size:300px 300px; opacity:.85; animation:twinkle 3.5s steps(2) infinite;}
+  .stars::after{background-position:150px 150px; animation-delay:1.7s;}
+  @keyframes twinkle{0%,100%{opacity:.35}50%{opacity:.95}}
+  @keyframes drift{from{transform:translateY(0)}to{transform:translateY(-40px)}}
+  .spot{position:absolute; top:-30%; width:55vw; height:160vh; mix-blend-mode:screen; opacity:.4; transform-origin:top center;}
+  .spot.a{left:6%; background:linear-gradient(to bottom, rgba(57,197,187,.6), transparent 70%); animation:sweepA 8s ease-in-out infinite;}
+  .spot.b{right:6%; background:linear-gradient(to bottom, rgba(255,95,162,.55), transparent 70%); animation:sweepB 10s ease-in-out infinite;}
+  .spot.c{left:40%; background:linear-gradient(to bottom, rgba(176,111,230,.5), transparent 70%); animation:sweepA 12s ease-in-out infinite;}
+  @keyframes sweepA{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(14deg)}}
+  @keyframes sweepB{0%,100%{transform:rotate(15deg)}50%{transform:rotate(-13deg)}}
+  .grid{position:absolute; left:-25%; right:-25%; bottom:0; height:42vh;
+    background-image:linear-gradient(rgba(57,197,187,.55) 2px, transparent 2px), linear-gradient(90deg, rgba(57,197,187,.45) 2px, transparent 2px);
+    background-size:40px 40px; transform:perspective(320px) rotateX(64deg); transform-origin:bottom center;
+    animation:gridscroll 3.5s linear infinite; opacity:.55;
+    -webkit-mask-image:linear-gradient(to top,#000 28%, transparent); mask-image:linear-gradient(to top,#000 28%, transparent);}
+  @keyframes gridscroll{from{background-position:0 0}to{background-position:0 40px}}
+  .eq{position:fixed; bottom:0; left:0; right:0; height:56px; display:flex; align-items:flex-end; justify-content:center; gap:3px; z-index:3; pointer-events:none; opacity:.55;}
+  .eq i{width:6px; background:linear-gradient(var(--pink),var(--teal)); border-radius:2px 2px 0 0; animation:eq 1s ease-in-out infinite;}
+  @keyframes eq{0%,100%{height:6px}50%{height:38px}}
+
+  #balloons{position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden;}
+  .note{position:absolute; bottom:-46px; font-size:26px; line-height:1; pointer-events:auto; cursor:pointer;
+    text-shadow:0 0 8px currentColor; will-change:transform;}
+  .note:active{transform:scale(.85);}
+  @keyframes rise{to{transform:translateY(-118vh) rotate(var(--sway));}}
+
+  .bunting{position:fixed; top:0; left:0; right:0; height:5px; z-index:4;
+    background:linear-gradient(90deg,var(--teal),var(--pink),var(--purple),var(--gold),var(--blue),var(--teal));
+    background-size:300% 100%; animation:rainbow 6s linear infinite; box-shadow:0 0 12px rgba(57,197,187,.7);}
+  @keyframes rainbow{to{background-position:300% 0}}
+
+  /* ===== Troupe ===== */
+  #troupe{position:fixed; inset:0; z-index:20; pointer-events:none;}
+  .toon{position:fixed; width:56px; height:56px; pointer-events:auto; cursor:grab; touch-action:none;
+    animation:bob 2.8s ease-in-out infinite; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));}
+  .toon svg{width:100%; height:100%; display:block;}
+  .toon.grab{cursor:grabbing; animation:none; z-index:40;}
+  .toon.hop{animation:hop .5s ease;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes hop{0%{transform:translateY(0)}30%{transform:translateY(-22px) scale(1.12)}60%{transform:translateY(0) scale(.96)}100%{transform:translateY(0)}}
+  .toonbubble{position:absolute; bottom:62px; left:50%; transform:translateX(-50%) scale(.9); white-space:nowrap; max-width:200px; overflow:hidden; text-overflow:ellipsis;
+    background:var(--panel2); color:#fff; font-weight:800; font-size:12px; padding:5px 10px; border-radius:12px; border:1px solid var(--teal);
+    box-shadow:0 0 12px rgba(57,197,187,.5); opacity:0; transition:.2s; pointer-events:none;}
+  .toonbubble.show{opacity:1; transform:translateX(-50%) scale(1);}
+  .toonbubble::after{content:""; position:absolute; bottom:-7px; left:50%; transform:translateX(-50%); border-left:7px solid transparent; border-right:7px solid transparent; border-top:7px solid var(--panel2);}
+
+  .wrap{width:100%; max-width:520px; position:relative; z-index:6;}
+
+  .stage{text-align:center; margin:14px 0 2px; position:relative;}
+  .mascot{width:98px; height:98px; cursor:pointer; display:inline-block; animation:bob 2.6s ease-in-out infinite; filter:drop-shadow(0 0 10px rgba(57,197,187,.6));}
+  .mascot:active{animation:none;}
+  .mascot.pop{animation:pop .5s ease;}
+  @keyframes pop{0%{transform:scale(1)}30%{transform:scale(1.18) rotate(-6deg)}60%{transform:scale(.94) rotate(5deg)}100%{transform:scale(1)}}
+  .bubble{display:inline-block; max-width:280px; margin:6px auto 0; padding:8px 14px; background:var(--panel2); color:#fff; font-weight:800; font-size:14px; border-radius:14px; position:relative; border:1px solid var(--teal); box-shadow:0 0 14px rgba(57,197,187,.5);
+    opacity:0; transform:translateY(6px) scale(.96); transition:.2s; pointer-events:none;}
+  .bubble.show{opacity:1; transform:translateY(0) scale(1);}
+  .bubble::after{content:""; position:absolute; top:-8px; left:50%; transform:translateX(-50%); border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:8px solid var(--panel2);}
+
+  .titlewrap{text-align:center; margin-top:6px;}
+  .title-plate{display:inline-block; background:rgba(10,14,36,.6); border:2px solid var(--teal); border-radius:14px; padding:12px 24px 10px;
+    box-shadow:0 0 24px rgba(57,197,187,.55), inset 0 0 18px rgba(57,197,187,.2);}
+  .title-plate h1{margin:0; font-family:'Press Start 2P',cursive; font-size:24px; color:#eafffb; letter-spacing:1px;
+    text-shadow:0 0 8px var(--teal), 2px 2px 0 var(--pink), -2px -2px 0 var(--purple); animation:glitch 4s steps(1) infinite;}
+  @keyframes glitch{0%,92%,100%{text-shadow:0 0 8px var(--teal),2px 2px 0 var(--pink),-2px -2px 0 var(--purple)}
+    94%{text-shadow:-3px 0 0 var(--pink),3px 0 0 var(--teal); transform:translateX(2px)}
+    96%{text-shadow:3px 0 0 var(--gold),-3px 0 0 var(--blue); transform:translateX(-2px)}}
+  .subband{display:inline-block; margin-top:8px; background:var(--panel); border:2px solid var(--pink); color:#fff; font-weight:800; letter-spacing:1px; padding:5px 16px; font-size:12px; border-radius:20px; box-shadow:0 0 14px rgba(255,95,162,.5);}
+  .subband .spark{color:var(--cyan);}
+  .intro{text-align:center; font-weight:700; color:#d6e8ff; margin:12px 6px 4px; font-size:15px; text-shadow:0 1px 6px rgba(0,0,0,.5);}
+
+  .streak{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:10px 4px 0; padding:9px 12px; text-align:center;
+    background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--teal); border-radius:14px; color:#fff; font-weight:800; box-shadow:0 0 16px rgba(57,197,187,.3);}
+  .streak.broken{border-color:var(--pink); box-shadow:0 0 16px rgba(255,95,162,.35);}
+  .streak .flame{font-size:22px; line-height:1;}
+  .streak .num{font-family:'Press Start 2P',cursive; font-size:15px; color:var(--cyan);}
+  .streak .lbl{font-size:12.5px; color:#cfe0ff;}
+  .streak .bonus{font-size:12.5px; color:var(--greentxt);}
+  .streak .best{font-size:12px; color:#ffc9e4;}
+
+  .scroll{background:linear-gradient(rgba(20,26,58,.9),rgba(12,16,40,.94)); border:2px solid var(--teal); border-radius:18px; padding:14px 12px; margin-top:10px;
+    box-shadow:0 0 22px rgba(57,197,187,.35), 0 12px 26px rgba(0,0,0,.5);}
+  .xpwrap{margin:2px 4px 12px;}
+  .xprow{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;}
+  .xprow b{font-family:'Press Start 2P',cursive; font-size:12px; color:var(--cyan);}
+  .xprow span{font-weight:800; color:var(--sub); font-size:14px;}
+  .xptrack{height:22px; background:#0f1636; border:2px solid #2b3a72; border-radius:12px; overflow:hidden; box-shadow:inset 0 2px 6px rgba(0,0,0,.5);}
+  .xpfill{height:100%; width:0%; border-radius:9px; background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple)); background-size:200% 100%; animation:rainbow 4s linear infinite; transition:width .45s cubic-bezier(.3,1.2,.5,1); box-shadow:0 0 12px rgba(255,95,162,.7);}
+
+  .quest{display:flex; align-items:center; gap:10px; background:linear-gradient(rgba(29,38,80,.92),rgba(20,26,58,.92)); border:2px solid #33437e; border-radius:12px;
+    padding:9px 10px; margin:9px 2px; cursor:pointer; user-select:none; box-shadow:0 2px 0 rgba(0,0,0,.35); transition:transform .08s ease, opacity .2s, border-color .2s;}
+  .quest:active{transform:scale(.98);}
+  .quest:hover{border-color:var(--teal);}
+  .quest .emoji{font-size:26px; width:38px; text-align:center; flex:none; filter:drop-shadow(0 0 4px rgba(57,197,187,.4));}
+  .quest .txt{flex:1; min-width:0;}
+  .quest .name{font-weight:800; font-size:16px; color:var(--ink); line-height:1.1; text-transform:uppercase; letter-spacing:.3px;}
+  .quest .name .flag2{font-size:10px; color:var(--pink); font-weight:800; letter-spacing:.5px;}
+  .quest .desc{font-size:12.5px; color:var(--sub); font-weight:600; line-height:1.2;}
+  .quest .xp{font-family:'Press Start 2P',cursive; font-size:11px; color:var(--xp); flex:none; white-space:nowrap;}
+  .box{flex:none; width:30px; height:30px; border-radius:7px; border:2px solid var(--pink); background:#0f1636; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; color:#fff; transition:.15s;}
+  .quest.done{opacity:.72;}
+  .quest.done .name, .quest.done .desc{text-decoration:line-through; text-decoration-color:rgba(159,179,216,.6);}
+  .quest.done .box{background:var(--teal); border-color:var(--cyan); transform:scale(1.05); box-shadow:0 0 10px var(--teal);}
+  .quest.done .box::after{content:"✓";}
+
+  .footer{display:flex; gap:10px; align-items:stretch; margin:14px 4px 2px;}
+  .reward{flex:1; background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--gold); border-radius:12px; color:#fff; text-align:center; padding:10px 8px; box-shadow:0 0 14px rgba(255,210,63,.3);}
+  .reward .lbl{font-family:'Press Start 2P',cursive; font-size:10px; color:var(--gold); letter-spacing:.5px;}
+  .reward .big{font-family:'Press Start 2P',cursive; font-size:16px; color:var(--pink); margin:8px 0 4px;}
+  .reward .unlock{font-weight:800; font-size:12px; color:var(--greentxt);}
+  .cheer{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--teal); border-radius:12px; text-align:center; padding:10px; font-weight:800; color:var(--ink); font-size:14px;}
+  .cheer .tent{font-size:32px; line-height:1;}
+
+  .hint{text-align:center; color:#8ea6d6; font-size:12px; margin:14px 6px 0; font-weight:600;}
+  .reset{display:block; margin:10px auto 0; background:none; border:none; color:#bcd0f5; font-weight:700; font-size:13px; opacity:.85; text-decoration:underline; cursor:pointer;}
+
+  .soundbtn{position:fixed; top:14px; right:10px; z-index:100; background:var(--panel); color:#fff; border:2px solid var(--teal); border-radius:20px; padding:6px 12px; font-family:'Baloo 2'; font-weight:800; font-size:13px; cursor:pointer; box-shadow:0 0 12px rgba(57,197,187,.4);}
+
+  .overlay{position:fixed; inset:0; background:rgba(6,8,22,.9); display:none; align-items:center; justify-content:center; z-index:80; padding:24px; text-align:center;}
+  .overlay.show{display:flex;}
+  .winbox{background:linear-gradient(var(--panel2),var(--panel)); border:3px solid var(--teal); border-radius:20px; padding:24px 22px; max-width:360px; box-shadow:0 0 44px rgba(57,197,187,.7);}
+  .winbox .d{font-size:56px;}
+  .winbox h2{font-family:'Press Start 2P',cursive; font-size:17px; color:var(--cyan); margin:8px 0; text-shadow:0 0 10px var(--teal);}
+  .winbox p{font-weight:800; color:#cfe0ff; font-size:15px; margin:6px 0 16px;}
+  .winbox .go{font-family:'Baloo 2'; font-weight:800; font-size:16px; color:#fff; background:linear-gradient(var(--pink),#c0348a); border:2px solid var(--pink); border-radius:12px; padding:11px 24px; cursor:pointer; box-shadow:0 0 14px rgba(255,95,162,.6);}
+
+  .confetti{position:fixed; width:9px; height:14px; z-index:90; pointer-events:none; border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="void"></div>
+  <div class="stars"></div>
+  <div class="spot a"></div>
+  <div class="spot b"></div>
+  <div class="spot c"></div>
+  <div class="grid"></div>
+  <div class="scan"></div>
+</div>
+<div class="bunting"></div>
+<div class="eq" id="eq"></div>
+<div id="balloons"></div>
+<div id="troupe"></div>
+
+<button class="soundbtn" id="soundbtn">🔊 Music</button>
+
+<div class="wrap">
+  <div class="stage">
+    <svg class="mascot" id="mascot" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-label="idol"></svg>
+    <div class="bubble" id="bubble"></div>
+  </div>
+
+  <div class="titlewrap">
+    <div class="title-plate"><h1>DAILY QUEST</h1></div>
+    <div><span class="subband"><span class="spark">♪</span> VIRTUAL STAGE <span class="spark">♪</span></span></div>
+  </div>
+
+  <div class="intro">Complete your quests to unlock all-day tech! 💙</div>
+
+  <div class="streak" id="streak"></div>
+
+  <div class="scroll">
+    <div class="xpwrap">
+      <div class="xprow"><b>QUEST XP</b><span id="xplabel">0 / 165 XP</span></div>
+      <div class="xptrack"><div class="xpfill" id="xpfill"></div></div>
+    </div>
+    <div id="quests"></div>
+  </div>
+
+  <div class="footer">
+    <div class="reward">
+      <div class="lbl">GRAND PRIZE</div>
+      <div class="big">200 XP</div>
+      <div class="unlock">🎮 ALL-DAY TECH UNLOCKED!</div>
+    </div>
+    <div class="cheer">
+      <div class="tent">🎤</div>
+      <div id="cheertxt">The stage is set for you!</div>
+    </div>
+  </div>
+
+  <div class="hint">🎧 Tap the idols to chat — or press &amp; hold to drag them around the stage!</div>
+  <button class="reset" id="reset">↺ Clear today’s checkmarks</button>
+  <button class="reset" id="testnotify" style="opacity:.6; font-size:12px;">🔔 Send test notification</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="winbox">
+    <div class="d">🎤✨</div>
+    <h2>ENCORE!</h2>
+    <p id="winmsg">200 XP earned — All-Day Tech Unlocked! Take a bow, superstar. 💙</p>
+    <button class="go" id="closewin">🎮 Let's Play!</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var QUESTS = [
+    {e:"🪥", n:"Brush Your Teeth",   d:"Keep that smile legendary.",        xp:10},
+    {e:"🧹", n:"Brush Your Hair",    d:"Tame the mane!",                     xp:10},
+    {e:"🧴", n:"Put On Deodorant",   d:"Stay fresh. Be your best.",          xp:10},
+    {e:"👕", n:"Change Your Clothes", d:"New day, new vibes.",  xp:10, flag:"BONUS"},
+    {e:"📖", n:"Read For 30 Minutes", d:"Feed your mind. Level up.",         xp:25},
+    {e:"🛏️", n:"Make Your Bed",      d:"Small effort, big impact.",          xp:15},
+    {e:"🫧", n:"Do The Dishes",      d:"Be a hero. Leave no mess behind.",   xp:20},
+    {e:"🧺", n:"Fold Laundry",       d:"Tidy now, thank yourself later.", xp:15, flag:"IF AVAILABLE"},
+    {e:"🎹", n:"Piano Practice — 15 Min", d:"Practice makes progress. Keep the music alive!", xp:20},
+    {e:"🎨", n:"Be A Creator",       d:"Create and publish something today! Share your gift with the world.", xp:30}
+  ];
+  var GOAL = QUESTS.reduce(function(s,q){return s+q.xp;},0);
+  var KEY = "dailyQuest";
+  var CHEERS = ["The stage is set for you!","Soundcheck… 🎧","You're glowing, superstar! ✨",
+                "The crowd's singing along! 🎶","One more number to go! 🎤","ENCORE! 🎉"];
+  var MOTIVATE = ["That's a chart-topper! 🎵","The glowsticks are glowing for you! 💙","Encore! Encore! 🎤",
+    "You're a total star! ⭐","Perfect note — keep singing! 🎶","The audience is cheering! 🎉","Hit single unlocked! 💿",
+    "You light up the stage! ✨","Bravo, superstar! 👏","Turn it up — you're amazing! 🔊"];
+  var GREET = ["Ready to shine on stage? 🎤","Let's make a hit today! 🎵","You + me = showtime! ✨","Wave your glowstick! 💙",
+    "I'm your #1 fan! 🎶","Drag me anywhere! 🎧","The stage is yours! ⭐","Sing it loud! 🔊","Let's top the charts! 💿","Spotlight's on you! 🌟"];
+
+  function pad(n){ return (n<10?'0':'')+n; }
+  function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function parseYmd(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function dayDiff(a,b){ return Math.round((parseYmd(a)-parseYmd(b))/86400000); }
+  function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+  function streakBonus(s){ return s>0 ? s*10 : 0; }
+  function milestoneFor(s){
+    if(s===3)  return "🔥 3-Day Streak — Rising Star!";
+    if(s===7)  return "🏅 7-Day Streak — Headliner!";
+    if(s===14) return "⚡ 14-Day Streak — Chart-Topper!";
+    if(s===30) return "👑 30-Day Streak — Superstar Legend!";
+    if(s>30 && s%10===0) return "🌟 "+s+"-Day Streak — Legendary!";
+    return "";
+  }
+
+  var NOTIFY = { ntfyTopic:"mq-lcd-9f4k2x7q", slackWebhook:"" };
+  function notify(title, message, tags, priority){
+    var safeTitle = String(title).replace(/[^\x00-\xFF]/g, '').trim() || 'Daily Quest';
+    if(NOTIFY.ntfyTopic){ try{ fetch('https://ntfy.sh/'+NOTIFY.ntfyTopic, {method:'POST', body:message,
+      headers:{ 'Title':safeTitle, 'Tags':tags||'', 'Priority':priority||'default' }}); }catch(e){} }
+    if(NOTIFY.slackWebhook){ try{ fetch(NOTIFY.slackWebhook, {method:'POST', mode:'no-cors',
+      headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+      body:'payload='+encodeURIComponent(JSON.stringify({text:title+' — '+message}))}); }catch(e){} }
+  }
+
+  /* ================= ORIGINAL SYNTH-POP ENGINE ================= */
+  var soundOn = (localStorage.getItem('dq_sound')||'on')==='on';
+  var audio = { ctx:null, master:null, timer:null, step:0 };
+  var MELODY = [440.00,523.25,659.25,523.25, 440.00,523.25,698.46,523.25, 523.25,659.25,783.99,659.25, 493.88,587.33,783.99,587.33];
+  var BASS   = [110.00,110.00,87.31,87.31,130.81,130.81,98.00,98.00];
+  function ensureCtx(){
+    if(!audio.ctx){ var AC = window.AudioContext||window.webkitAudioContext; if(!AC) return;
+      audio.ctx = new AC(); audio.master = audio.ctx.createGain(); audio.master.gain.value = 0.7; audio.master.connect(audio.ctx.destination); }
+    if(audio.ctx.state==='suspended'){ try{ audio.ctx.resume(); }catch(e){} }
+  }
+  function hit(freq, dur, type, vol){
+    if(!audio.ctx) return;
+    var t=audio.ctx.currentTime, o=audio.ctx.createOscillator(), g=audio.ctx.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(audio.master); o.start(t); o.stop(t+dur+0.03);
+  }
+  function musicTick(){
+    if(!soundOn||!audio.ctx) return;
+    var f=MELODY[audio.step]; if(f){ hit(f,0.14,'square',0.045); hit(f*2,0.10,'triangle',0.02); }
+    if(audio.step%2===0){ var b=BASS[audio.step/2]; if(b) hit(b,0.20,'sawtooth',0.05); }
+    audio.step=(audio.step+1)%MELODY.length;
+  }
+  function startMusic(){ ensureCtx(); if(audio.ctx && !audio.timer){ audio.timer=setInterval(musicTick,140); } }
+  function stopMusic(){ if(audio.timer){ clearInterval(audio.timer); audio.timer=null; } }
+  function blip(){ if(!soundOn) return; ensureCtx(); hit(988,0.09,'square',0.05); }
+  function chime(){ if(!soundOn) return; ensureCtx(); if(!audio.ctx) return; hit(880,0.12,'square',0.05); setTimeout(function(){ hit(1318.51,0.14,'square',0.05); },80); }
+  var soundBtn=document.getElementById('soundbtn');
+  function paintSound(){ soundBtn.textContent=(soundOn?'🔊':'🔇')+' Music'; }
+  paintSound();
+  soundBtn.addEventListener('click', function(){ soundOn=!soundOn; localStorage.setItem('dq_sound', soundOn?'on':'off'); paintSound();
+    if(soundOn){ startMusic(); blip(); } else { stopMusic(); } });
+  var firstGesture=function(){ if(soundOn) startMusic(); window.removeEventListener('pointerdown',firstGesture); };
+  window.addEventListener('pointerdown', firstGesture);
+
+  /* ================= STATE ================= */
+  var state = load();
+  var qEl = document.getElementById('quests');
+  function load(){
+    var s; try{ s = JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ s=null; }
+    if(!s) s={};
+    if(!s.done) s.done={};
+    if(typeof s.streak!=='number') s.streak=0;
+    if(typeof s.best!=='number')   s.best=0;
+    s.lastComplete = s.lastComplete || null;
+    s.notifiedDate = s.notifiedDate || null;
+    s.broke = false;
+    var today = ymd(new Date());
+    if(s.day !== today){ s.done={}; s.day=today; }
+    if(s.lastComplete && s.streak>0 && dayDiff(today, s.lastComplete) >= 2){ s.streak = 0; s.broke = true; }
+    return s;
+  }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  function render(){
+    qEl.innerHTML = "";
+    QUESTS.forEach(function(q,i){
+      var done = !!state.done[i];
+      var row = document.createElement('div');
+      row.className = "quest"+(done?" done":"");
+      row.innerHTML = '<div class="emoji">'+q.e+'</div>'+
+        '<div class="txt"><div class="name">'+q.n+(q.flag?' <span class="flag2">('+q.flag+')</span>':'')+'</div>'+
+        '<div class="desc">'+q.d+'</div></div>'+
+        '<div class="xp">+'+q.xp+' XP</div><div class="box"></div>';
+      row.addEventListener('click', function(){ toggle(i); });
+      qEl.appendChild(row);
+    });
+    updateXP(); renderStreak();
+  }
+  function renderStreak(){
+    var el = document.getElementById('streak');
+    var s = state.streak||0, best = state.best||0;
+    var bestTag = best>0 ? '<span class="best">🏆 Best: '+best+'</span>' : '';
+    if(s>0){ el.className='streak'; el.innerHTML='<span class="flame">🔥</span><span class="num">'+s+'</span><span class="lbl">day streak</span><span class="bonus">+'+streakBonus(s)+' bonus XP</span>'+bestTag; }
+    else if(state.broke){ el.className='streak broken'; el.innerHTML='<span class="flame">💔</span><span class="lbl">Streak reset — finish all quests today to start a new one! 💪</span>'+bestTag; }
+    else { el.className='streak'; el.innerHTML='<span class="flame">🔥</span><span class="lbl">Finish all quests today to start your streak!</span>'+bestTag; }
+  }
+  function toggle(i){
+    var wasComplete = isComplete();
+    var nowDone = !state.done[i];
+    state.done[i] = nowDone; save();
+    qEl.children[i].classList.toggle('done', nowDone);
+    updateXP();
+    if(nowDone){ blip(); toonReact(rand(MOTIVATE)); }
+    if(!wasComplete && isComplete()){
+      var r = awardStreak(); renderStreak(); celebrate(r);
+      var today = ymd(new Date());
+      if(state.notifiedDate !== today){
+        state.notifiedDate = today; save();
+        var msg = "Finished all daily quests! 🎉";
+        if(state.streak>0) msg += " "+state.streak+"-day streak (+"+streakBonus(state.streak)+" bonus XP).";
+        var ms = milestoneFor(state.streak); if(ms) msg += " "+ms;
+        notify("Encore! Quests Complete", msg, "tada,musical_note", "high");
+      }
+    }
+  }
+  function awardStreak(){
+    var today = ymd(new Date());
+    if(state.lastComplete === today){ return {streak:state.streak, bonus:streakBonus(state.streak), ms:""}; }
+    if(state.lastComplete && dayDiff(today, state.lastComplete) === 1){ state.streak += 1; } else { state.streak = 1; }
+    state.lastComplete = today; state.broke = false;
+    if(state.streak > state.best) state.best = state.streak;
+    save();
+    return {streak:state.streak, bonus:streakBonus(state.streak), ms:milestoneFor(state.streak)};
+  }
+  function total(){ var t=0; QUESTS.forEach(function(q,i){ if(state.done[i]) t+=q.xp; }); return t; }
+  function isComplete(){ return QUESTS.every(function(q,i){ return state.done[i]; }); }
+  function updateXP(){
+    var t = total();
+    document.getElementById('xpfill').style.width = Math.min(100, Math.round(t/GOAL*100))+"%";
+    document.getElementById('xplabel').textContent = t+" / "+GOAL+" XP";
+    var doneCount = QUESTS.filter(function(q,i){return state.done[i];}).length;
+    var idx = Math.min(CHEERS.length-1, doneCount); if(isComplete()) idx = CHEERS.length-1;
+    document.getElementById('cheertxt').textContent = CHEERS[idx];
+  }
+  function celebrate(r){
+    var p = document.getElementById('winmsg');
+    if(p && r){
+      var line = '200 XP earned — All-Day Tech Unlocked!';
+      if(r.streak>0) line += ' 🔥 '+r.streak+'-day streak (+'+r.bonus+' bonus XP).';
+      if(r.ms) line += ' '+r.ms;
+      line += ' Take a bow! 💙'; p.textContent = line;
+    }
+    document.getElementById('overlay').classList.add('show');
+    allToonsCheer();
+    for(var i=0;i<120;i++) confetti(window.innerWidth*Math.random(), -10);
+  }
+  function confetti(x,y){
+    var c = document.createElement('div'); c.className='confetti';
+    var colors=['#39c5bb','#ff5fa2','#b06fe6','#41e0d8','#6f9bff','#ffd23f'];
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=x+'px'; c.style.top=y+'px';
+    var dur=2.4+Math.random()*2, dx=(Math.random()*200-100);
+    c.style.transition='transform '+dur+'s linear, opacity '+dur+'s linear';
+    document.body.appendChild(c);
+    requestAnimationFrame(function(){ c.style.transform='translate('+dx+'px,'+(window.innerHeight+40)+'px) rotate('+(Math.random()*720-360)+'deg)'; c.style.opacity='0'; });
+    setTimeout(function(){ c.remove(); }, dur*1000+100);
+  }
+
+  /* equalizer */
+  (function(){ var eq=document.getElementById('eq');
+    for(var i=0;i<28;i++){ var b=document.createElement('i'); b.style.animationDuration=(0.6+Math.random()*0.9)+'s'; b.style.animationDelay=(-Math.random()*1.2)+'s'; eq.appendChild(b); } })();
+
+  /* floating music notes */
+  var noteLayer=document.getElementById('balloons');
+  var noteColors=['#39c5bb','#ff5fa2','#b06fe6','#41e0d8','#6f9bff','#ffd23f'];
+  var GLYPHS=['♪','♫','♬','♩','♪','♫'];
+  function spawnNote(){
+    if(document.hidden || noteLayer.children.length>4) return;
+    var b=document.createElement('div'); b.className='note';
+    b.textContent=rand(GLYPHS); b.style.color=noteColors[Math.floor(Math.random()*noteColors.length)];
+    b.style.left=(6+Math.random()*84)+'vw';
+    b.style.setProperty('--sway',(Math.random()*30-15)+'deg');
+    b.style.animation='rise '+(9+Math.random()*6)+'s linear forwards';
+    b.addEventListener('click', function(){ chime(); var r=b.getBoundingClientRect();
+      for(var i=0;i<14;i++) confetti(r.left+r.width/2, r.top+r.height/2); b.remove(); });
+    b.addEventListener('animationend', function(){ b.remove(); });
+    noteLayer.appendChild(b);
+  }
+  setInterval(spawnNote, 2500); setTimeout(spawnNote, 900);
+
+  /* ================= IDOL CHARACTERS (original) ================= */
+  function idol(hair, accent){
+    return ''+
+      '<rect x="3" y="1" width="10" height="1" fill="'+hair+'"/><rect x="2" y="2" width="12" height="1" fill="'+hair+'"/>'+
+      '<rect x="4" y="3" width="8" height="1" fill="'+hair+'"/>'+
+      '<rect x="2" y="3" width="2" height="10" fill="'+hair+'"/><rect x="12" y="3" width="2" height="10" fill="'+hair+'"/>'+
+      '<rect x="2" y="12" width="2" height="1" fill="'+accent+'"/><rect x="12" y="12" width="2" height="1" fill="'+accent+'"/>'+
+      '<rect x="4" y="4" width="8" height="5" fill="#ffe6e0"/>'+
+      '<rect x="5" y="5" width="2" height="2" fill="'+accent+'"/><rect x="9" y="5" width="2" height="2" fill="'+accent+'"/>'+
+      '<rect x="5" y="5" width="1" height="1" fill="#fff"/><rect x="9" y="5" width="1" height="1" fill="#fff"/>'+
+      '<rect x="4" y="7" width="1" height="1" fill="#ff9ec0"/><rect x="11" y="7" width="1" height="1" fill="#ff9ec0"/>'+
+      '<rect x="7" y="7" width="2" height="1" fill="#cc7a55"/>'+
+      '<rect x="3" y="4" width="1" height="2" fill="#2a2f4a"/><rect x="12" y="4" width="1" height="2" fill="#2a2f4a"/>'+
+      '<rect x="3" y="6" width="1" height="1" fill="#2a2f4a"/><rect x="4" y="7" width="0" height="0" fill="#2a2f4a"/>'+
+      '<rect x="4" y="8" width="1" height="1" fill="'+accent+'"/>'+
+      '<rect x="4" y="9" width="8" height="6" fill="#1f2547"/>'+
+      '<rect x="4" y="9" width="8" height="1" fill="'+accent+'"/>'+
+      '<rect x="7" y="10" width="2" height="5" fill="'+accent+'"/>'+
+      '<rect x="4" y="10" width="1" height="2" fill="'+accent+'"/><rect x="11" y="10" width="1" height="2" fill="'+accent+'"/>';
+  }
+  document.getElementById('mascot').innerHTML = idol('#39c5bb', '#41e0d8');
+
+  var TROUPE = [
+    { id:'idolP', hair:'#ff6fb5', accent:'#ffd23f' },
+    { id:'idolG', hair:'#ffcf3f', accent:'#ff5fa2' },
+    { id:'idolV', hair:'#b06fe6', accent:'#41e0d8' },
+    { id:'idolB', hair:'#6f9bff', accent:'#ff6fb5' }
+  ];
+  var DEFAULT_POS = { idolP:{l:'4vw',t:'26vh'}, idolG:{l:'86vw',t:'20vh'}, idolV:{l:'5vw',t:'62vh'}, idolB:{l:'85vw',t:'56vh'} };
+  var savedPos = {}; try{ savedPos = JSON.parse(localStorage.getItem('dq_idols')||'{}'); }catch(e){ savedPos={}; }
+  var troupeEl = document.getElementById('troupe');
+
+  function toonSay(el, text){ var b=el.querySelector('.toonbubble'); b.textContent=text; b.classList.add('show');
+    clearTimeout(el._t); el._t=setTimeout(function(){ b.classList.remove('show'); }, 2600); }
+  function hopToon(el){ el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop'); }
+
+  TROUPE.forEach(function(def, idx){
+    var el=document.createElement('div'); el.className='toon'; el.dataset.id=def.id;
+    el.style.animationDelay=(idx*0.4)+'s';
+    var pos = savedPos[def.id] || DEFAULT_POS[def.id];
+    el.style.left = pos.l; el.style.top = pos.t;
+    el.innerHTML = '<svg viewBox="0 0 16 16" shape-rendering="crispEdges">'+idol(def.hair, def.accent)+'</svg><div class="toonbubble"></div>';
+    troupeEl.appendChild(el);
+
+    var dragging=false, moved=false, sx=0, sy=0, ox=0, oy=0;
+    el.addEventListener('pointerdown', function(e){ dragging=true; moved=false; sx=e.clientX; sy=e.clientY;
+      var r=el.getBoundingClientRect(); ox=e.clientX-r.left; oy=e.clientY-r.top; el.classList.add('grab'); try{ el.setPointerCapture(e.pointerId); }catch(_){} });
+    el.addEventListener('pointermove', function(e){ if(!dragging) return;
+      if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>6) moved=true;
+      el.style.left=(e.clientX-ox)+'px'; el.style.top=(e.clientY-oy)+'px'; });
+    function end(e){ if(!dragging) return; dragging=false; el.classList.remove('grab');
+      if(moved){ savedPos[def.id]={l:el.style.left, t:el.style.top}; try{ localStorage.setItem('dq_idols', JSON.stringify(savedPos)); }catch(_){} }
+      else { blip(); hopToon(el); toonSay(el, rand(GREET)); } }
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  });
+
+  function toonReact(text){
+    var kids=troupeEl.children; if(!kids.length) return;
+    var el=kids[Math.floor(Math.random()*kids.length)];
+    hopToon(el); toonSay(el, text);
+    var r=el.getBoundingClientRect();
+    for(var i=0;i<10;i++) confetti(r.left+r.width/2, r.top+r.height/2);
+  }
+  function allToonsCheer(){ var kids=troupeEl.children;
+    for(var i=0;i<kids.length;i++){ (function(el,d){ setTimeout(function(){ hopToon(el); toonSay(el, rand(MOTIVATE)); }, d*140); })(kids[i], i); } }
+
+  var mascot=document.getElementById('mascot'), bubble=document.getElementById('bubble'), bTimer=null;
+  var HOST=["Welcome to the stage! 🎤","The spotlight's on you! ✨","Let's top the charts! 🎵","You're the headliner! ⭐",
+            "Sing it with me! 🎶","Ready for your solo? 🎧","You make the crowd roar! 🎉"];
+  function hostSay(txt){ bubble.textContent=txt; bubble.classList.add('show');
+    mascot.classList.remove('pop'); void mascot.offsetWidth; mascot.classList.add('pop');
+    clearTimeout(bTimer); bTimer=setTimeout(function(){ bubble.classList.remove('show'); },2600); }
+  mascot.addEventListener('click', function(){ blip(); hostSay(rand(HOST)); });
+
+  document.getElementById('closewin').addEventListener('click', function(){ document.getElementById('overlay').classList.remove('show'); });
+  document.getElementById('reset').addEventListener('click', function(){
+    if(confirm('Clear today’s checkmarks? (Your streak and best score are kept.)')){
+      state.done={}; state.day=ymd(new Date()); state.notifiedDate=null; save(); render();
+    }
+  });
+  var tn=document.getElementById('testnotify');
+  if(tn){ tn.addEventListener('click', function(){
+    notify("Test Alert","ntfy is connected! You'll get a ping like this when the show is complete. 🎉","bell","high");
+    alert("Test sent! Check your phone. If nothing arrives, make sure the ntfy app is subscribed to the exact topic and notifications are allowed.");
+  }); }
+
+  render();
+  setTimeout(function(){ hostSay("Welcome to the stage! 🎤"); }, 700);
+  if(state.broke){ save(); notify("Streak Reset","A day was missed — the daily-quest streak is back to 0. Might be worth a nudge! 💔","broken_heart","default"); }
+})();
+</script>
+</body>
+</html>
