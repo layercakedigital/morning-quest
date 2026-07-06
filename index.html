@@ -40,7 +40,7 @@
   .sub .s{color:#ffd23f;}
 
   .grid{display:grid; grid-template-columns:1fr; gap:18px; margin-top:26px;}
-  @media(min-width:640px){ .grid{grid-template-columns:repeat(3,1fr);} }
+  @media(min-width:560px){ .grid{grid-template-columns:repeat(auto-fit,minmax(196px,1fr));} }
 
   .tile{display:block; text-decoration:none; border-radius:18px; overflow:hidden; border:3px solid rgba(255,255,255,.16);
     background:#170f2e; box-shadow:0 10px 24px rgba(0,0,0,.45); transition:transform .16s, box-shadow .2s, border-color .2s;}
@@ -78,6 +78,15 @@
   .prev-idol .b2{right:6%; background:linear-gradient(to bottom, rgba(255,95,162,.55), transparent 70%); transform:rotate(12deg);}
   .prev-idol .n{position:absolute; font-size:14px; text-shadow:0 0 8px currentColor;}
   .prev-idol .n1{top:10px; left:14px; color:#41e0d8;} .prev-idol .n2{top:20px; right:16px; color:#ff5fa2;}
+
+  /* Banana preview */
+  .prev-banana{background:linear-gradient(#5fb0ff, #9bd6ff 50%, #ffe27a);}
+  .prev-banana .caution{position:absolute; top:0; left:0; right:0; height:8px; background:repeating-linear-gradient(45deg,#241c10 0 10px,#ffd21e 10px 20px);}
+  .prev-banana .g{position:absolute; font-size:15px;} .prev-banana .g1{top:12px; left:14px;} .prev-banana .g2{top:20px; right:16px;}
+
+  /* Kitty preview */
+  .prev-kitty{background:linear-gradient(#ffe4f1, #ffd0e6 50%, #ffc0dd);}
+  .prev-kitty .h{position:absolute; font-size:14px;} .prev-kitty .h1{top:10px; left:14px; color:#ff5a7a;} .prev-kitty .h2{top:20px; right:16px; color:#c79bff;}
 
   .foot{margin-top:26px; color:#b9a6e4; font-weight:700; font-size:14px;}
 </style>
@@ -156,6 +165,56 @@
         <div class="tname" style="color:#39c5bb;">NEON IDOL</div>
         <div class="ttag">Take the stage! Neon lights &amp; music notes. 🎤</div>
         <span class="play" style="background:#39c5bb; color:#06231f;">▶ Play</span>
+      </div>
+    </a>
+
+    <a class="tile" href="banana.html" style="border-color:rgba(255,210,30,.6);">
+      <div class="prev prev-banana">
+        <div class="caution"></div>
+        <div class="g g1">🍌</div><div class="g g2">🥽</div>
+        <svg class="mini" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <rect x="4" y="1" width="8" height="1" fill="#e9bd00"/><rect x="3" y="2" width="10" height="9" fill="#ffd21e"/>
+          <rect x="4" y="11" width="8" height="1" fill="#ffd21e"/>
+          <rect x="6" y="0" width="1" height="1" fill="#241c10"/><rect x="8" y="0" width="1" height="1" fill="#241c10"/><rect x="9" y="0" width="1" height="1" fill="#241c10"/>
+          <rect x="3" y="6" width="10" height="1" fill="#5c6068"/>
+          <rect x="4" y="4" width="3" height="4" fill="#c9ced6"/><rect x="9" y="4" width="3" height="4" fill="#c9ced6"/>
+          <rect x="5" y="5" width="2" height="2" fill="#fff"/><rect x="9" y="5" width="2" height="2" fill="#fff"/>
+          <rect x="6" y="5" width="1" height="1" fill="#241c10"/><rect x="9" y="5" width="1" height="1" fill="#241c10"/>
+          <rect x="6" y="9" width="4" height="1" fill="#7a4a1e"/>
+          <rect x="3" y="11" width="10" height="4" fill="#2b57b5"/><rect x="7" y="12" width="2" height="2" fill="#1e3f85"/>
+          <rect x="3" y="15" width="3" height="1" fill="#241c10"/><rect x="10" y="15" width="3" height="1" fill="#241c10"/>
+        </svg>
+      </div>
+      <div class="meta">
+        <div class="tname" style="color:#c99a1e;">BANANA SQUAD</div>
+        <div class="ttag">Goofy yellow helpers &amp; bananas. 🍌</div>
+        <span class="play" style="background:#ffd21e; color:#3a2f0a;">▶ Play</span>
+      </div>
+    </a>
+
+    <a class="tile" href="kitty.html" style="border-color:rgba(255,158,199,.6);">
+      <div class="prev prev-kitty">
+        <div class="h h1">💗</div><div class="h h2">🎀</div>
+        <svg class="mini" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <rect x="2" y="2" width="3" height="1" fill="#fff"/><rect x="1" y="3" width="4" height="2" fill="#fff"/>
+          <rect x="11" y="2" width="3" height="1" fill="#fff"/><rect x="11" y="3" width="4" height="2" fill="#fff"/>
+          <rect x="2" y="3" width="1" height="1" fill="#ffb3d1"/><rect x="12" y="3" width="1" height="1" fill="#ffb3d1"/>
+          <rect x="3" y="4" width="10" height="8" fill="#fff"/>
+          <rect x="2" y="5" width="1" height="6" fill="#fff"/><rect x="13" y="5" width="1" height="6" fill="#fff"/>
+          <rect x="4" y="12" width="8" height="1" fill="#fff"/>
+          <rect x="5" y="7" width="1" height="2" fill="#4a3540"/><rect x="10" y="7" width="1" height="2" fill="#4a3540"/>
+          <rect x="7" y="8" width="2" height="1" fill="#ffbf3f"/>
+          <rect x="0" y="7" width="2" height="1" fill="#d9c6d0"/><rect x="0" y="9" width="2" height="1" fill="#d9c6d0"/>
+          <rect x="14" y="7" width="2" height="1" fill="#d9c6d0"/><rect x="14" y="9" width="2" height="1" fill="#d9c6d0"/>
+          <rect x="6" y="10" width="1" height="1" fill="#ffb3d1"/><rect x="9" y="10" width="1" height="1" fill="#ffb3d1"/>
+          <rect x="0" y="1" width="2" height="2" fill="#ff5a7a"/><rect x="4" y="1" width="2" height="2" fill="#ff5a7a"/>
+          <rect x="0" y="2" width="2" height="1" fill="#d63a5c"/><rect x="4" y="2" width="2" height="1" fill="#d63a5c"/><rect x="2" y="2" width="2" height="1" fill="#ff5a7a"/>
+        </svg>
+      </div>
+      <div class="meta">
+        <div class="tname" style="color:#ff5a7a;">PASTEL KITTY</div>
+        <div class="ttag">Kawaii cats, bows &amp; hearts. 🎀</div>
+        <span class="play" style="background:#ff9ec7; color:#fff;">▶ Play</span>
       </div>
     </a>
 
