@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#5b8dd6">
+<title>Morning Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky1:#5fa8e8; --sky2:#8fd0f5;
+    --parch:#f2dcae; --parch2:#e9cd93; --parch-line:#d8b878;
+    --ink:#3a2a17; --sub:#6b4f2e;
+    --purple:#7b3fb0; --purple2:#9a52d6;
+    --pink:#ee5a97; --pinkband:#f06ea3;
+    --xp:#ec4899; --gold:#ffcf3f; --gold2:#ff9e2c;
+    --green:#4ec06f; --greentxt:#8dffb0;
+    --panel:#2b1a4d; --panel2:#3a2568;
+    --tile:#f6e7c4; --tile-b:#3a2a17;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:'Baloo 2',system-ui,sans-serif;
+    background:linear-gradient(#4f97dd,#7cc4f0 55%,#7bbf62 100%);
+    min-height:100vh; color:var(--ink);
+    display:flex; justify-content:center;
+    padding:14px 10px 40px;
+  }
+  .wrap{width:100%; max-width:520px;}
+
+  /* Banner */
+  .banner{position:relative; text-align:center; margin:6px 0 2px;}
+  .crown{font-size:26px; line-height:1; filter:drop-shadow(0 2px 0 rgba(0,0,0,.25));}
+  .title-plate{
+    display:inline-block; margin-top:2px;
+    background:linear-gradient(var(--purple2),var(--purple));
+    border:4px solid #4d2378; border-radius:14px;
+    padding:12px 26px 10px;
+    box-shadow:0 6px 0 #3a1a5e, 0 8px 14px rgba(0,0,0,.25);
+  }
+  .title-plate h1{
+    margin:0; font-family:'Press Start 2P',cursive;
+    font-size:26px; color:#fff; letter-spacing:1px;
+    text-shadow:2px 2px 0 #4d2378, 4px 4px 0 rgba(0,0,0,.25);
+  }
+  .subband{
+    display:inline-block; margin-top:-6px; position:relative; z-index:2;
+    background:linear-gradient(var(--pinkband),var(--pink));
+    border:3px solid #c73a76; border-radius:10px;
+    color:#fff; font-weight:800; letter-spacing:1px;
+    padding:6px 18px; font-size:13px;
+    box-shadow:0 4px 0 #b3306a;
+  }
+  .subband .spark{color:#ffe08a;}
+
+  .intro{
+    text-align:center; font-weight:700; color:#243b52;
+    margin:12px 6px 4px; font-size:16px;
+  }
+
+  /* Scroll / parchment */
+  .scroll{
+    background:
+      repeating-linear-gradient(0deg, transparent 0 30px, rgba(0,0,0,.02) 30px 31px),
+      linear-gradient(var(--parch),var(--parch2));
+    border:5px solid #c9a25f; border-radius:18px;
+    padding:14px 12px; margin-top:8px;
+    box-shadow:inset 0 0 0 3px #e7cf9b, 0 10px 22px rgba(0,0,0,.22);
+  }
+
+  /* XP bar */
+  .xpwrap{margin:2px 4px 12px;}
+  .xprow{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;}
+  .xprow b{font-family:'Press Start 2P',cursive; font-size:12px; color:var(--purple);}
+  .xprow span{font-weight:800; color:var(--sub); font-size:14px;}
+  .xptrack{
+    height:22px; background:#d8b878; border:3px solid #a9843f;
+    border-radius:12px; overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,.2);
+  }
+  .xpfill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,#ff7ab6,#ec4899,#c026d3);
+    border-radius:9px; transition:width .45s cubic-bezier(.3,1.2,.5,1);
+    box-shadow:0 0 10px rgba(236,72,153,.6);
+  }
+
+  /* Streak strip */
+  .streak{
+    display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+    margin:10px 4px 0; padding:9px 12px; text-align:center;
+    background:linear-gradient(#3a2568,#2b1a4d);
+    border:3px solid #6a4bd6; border-radius:12px; color:#fff; font-weight:800;
+    box-shadow:0 4px 0 #1c1036;
+  }
+  .streak.broken{background:linear-gradient(#5a2f2f,#3d1c1c); border-color:#c0574b;}
+  .streak .flame{font-size:22px; line-height:1;}
+  .streak .num{font-family:'Press Start 2P',cursive; font-size:15px; color:var(--gold);}
+  .streak .lbl{font-size:12.5px; color:#e9d8ff;}
+  .streak .bonus{font-size:12.5px; color:var(--greentxt);}
+  .streak .best{font-size:12px; color:#ffd9ec;}
+
+  /* Quest tiles */
+  .quest{
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(var(--tile),#f0dfb6);
+    border:3px solid var(--tile-b); border-radius:12px;
+    padding:9px 10px; margin:9px 2px;
+    cursor:pointer; user-select:none;
+    transition:transform .08s ease, box-shadow .15s ease, opacity .2s;
+    box-shadow:0 3px 0 rgba(0,0,0,.12);
+  }
+  .quest:active{transform:scale(.98);}
+  .quest .emoji{
+    font-size:26px; width:38px; text-align:center; flex:none;
+    filter:drop-shadow(0 1px 0 rgba(0,0,0,.15));
+  }
+  .quest .txt{flex:1; min-width:0;}
+  .quest .name{
+    font-weight:800; font-size:16px; color:var(--ink); line-height:1.1;
+    text-transform:uppercase; letter-spacing:.3px;
+  }
+  .quest .name .flag{
+    font-size:10px; color:var(--purple); font-weight:800;
+    vertical-align:middle; letter-spacing:.5px;
+  }
+  .quest .desc{font-size:12.5px; color:var(--sub); font-weight:600; line-height:1.2;}
+  .quest .xp{
+    font-family:'Press Start 2P',cursive; font-size:11px; color:var(--xp);
+    flex:none; white-space:nowrap;
+  }
+  .box{
+    flex:none; width:30px; height:30px; border-radius:7px;
+    border:3px solid var(--purple); background:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:20px; color:#fff;
+    transition:background .15s, transform .12s;
+  }
+  .quest.done{opacity:.78;}
+  .quest.done .name, .quest.done .desc{text-decoration:line-through; text-decoration-color:rgba(58,42,23,.5);}
+  .quest.done .box{background:var(--green); border-color:#2f9a52; transform:scale(1.05);}
+  .quest.done .box::after{content:"✓";}
+
+  /* Footer reward */
+  .footer{display:flex; gap:10px; align-items:stretch; margin:14px 4px 2px;}
+  .reward{
+    flex:1; background:linear-gradient(var(--panel2),var(--panel));
+    border:3px solid #6a4bd6; border-radius:12px;
+    color:#fff; text-align:center; padding:10px 8px;
+    box-shadow:0 4px 0 #1c1036;
+  }
+  .reward .lbl{font-family:'Press Start 2P',cursive; font-size:10px; color:var(--gold); letter-spacing:.5px;}
+  .reward .big{font-family:'Press Start 2P',cursive; font-size:16px; color:#ff8fc0; margin:8px 0 4px;}
+  .reward .unlock{font-weight:800; font-size:12px; color:var(--greentxt);}
+  .cheer{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:#fff; border:3px solid #cbb06f; border-radius:12px;
+    text-align:center; padding:10px; font-weight:800; color:var(--ink);
+    font-size:15px; box-shadow:0 4px 0 rgba(0,0,0,.12);
+  }
+  .cheer .dragon{font-size:34px; line-height:1;}
+
+  .reset{
+    display:block; margin:16px auto 0; background:none; border:none;
+    color:#e9f4ff; font-weight:700; font-size:13px; opacity:.85;
+    text-decoration:underline; cursor:pointer;
+  }
+
+  /* Win overlay */
+  .overlay{
+    position:fixed; inset:0; background:rgba(20,10,40,.82);
+    display:none; align-items:center; justify-content:center; z-index:50;
+    padding:24px; text-align:center; animation:fade .3s ease;
+  }
+  .overlay.show{display:flex;}
+  .winbox{
+    background:linear-gradient(var(--parch),var(--parch2));
+    border:5px solid var(--gold); border-radius:20px;
+    padding:26px 22px; max-width:360px;
+    box-shadow:0 0 40px rgba(255,207,63,.6);
+  }
+  .winbox .d{font-size:60px;}
+  .winbox h2{
+    font-family:'Press Start 2P',cursive; font-size:18px; color:var(--purple);
+    margin:8px 0; text-shadow:2px 2px 0 #f0d99a;
+  }
+  .winbox p{font-weight:800; color:var(--sub); font-size:15px; margin:6px 0 16px;}
+  .winbox .go{
+    font-family:'Baloo 2'; font-weight:800; font-size:16px; color:#fff;
+    background:linear-gradient(var(--green),#2f9a52); border:3px solid #237a40;
+    border-radius:12px; padding:11px 24px; cursor:pointer;
+    box-shadow:0 4px 0 #1c5c31;
+  }
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+
+  /* confetti */
+  .confetti{position:fixed; top:-12px; width:9px; height:14px; z-index:60; pointer-events:none; border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner">
+    <div class="crown">👑</div>
+    <div class="title-plate"><h1>MORNING QUEST</h1></div>
+    <div><span class="subband"><span class="spark">✦</span> PREPARE. POWER UP. PLAY. <span class="spark">✦</span></span></div>
+  </div>
+
+  <div class="intro">Complete your quests before unlocking all-day tech! 💜</div>
+
+  <div class="streak" id="streak"></div>
+
+  <div class="scroll">
+    <div class="xpwrap">
+      <div class="xprow"><b>QUEST XP</b><span id="xplabel">0 / 200 XP</span></div>
+      <div class="xptrack"><div class="xpfill" id="xpfill"></div></div>
+    </div>
+    <div id="quests"></div>
+  </div>
+
+  <div class="footer">
+    <div class="reward">
+      <div class="lbl">QUEST REWARDS</div>
+      <div class="big">200 XP</div>
+      <div class="unlock">🎮 ALL-DAY TECH UNLOCKED!</div>
+    </div>
+    <div class="cheer">
+      <div class="dragon">🐉</div>
+      <div id="cheertxt">You've got this, Quest Master! 💜</div>
+    </div>
+  </div>
+
+  <button class="reset" id="reset">↺ Clear today’s checkmarks</button>
+  <button class="reset" id="testnotify" style="opacity:.6; font-size:12px;">🔔 Send test notification</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="winbox">
+    <div class="d">🐉✨</div>
+    <h2>QUEST COMPLETE!</h2>
+    <p id="winmsg">200 XP earned — All-Day Tech Unlocked! You're a true Quest Master. 💜</p>
+    <button class="go" id="closewin">🎮 Let's Play!</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var QUESTS = [
+    {e:"🪥", n:"Brush Your Teeth",   d:"Keep that smile legendary.",        xp:10},
+    {e:"🧹", n:"Brush Your Hair",    d:"Tame the mane!",                     xp:10},
+    {e:"🧴", n:"Put On Deodorant",   d:"Stay fresh. Be your best.",          xp:10},
+    {e:"👕", n:"Change Your Clothes", d:"New day, new vibes.",  xp:10, flag:"BONUS"},
+    {e:"📖", n:"Read For 30 Minutes", d:"Feed your mind. Level up.",         xp:25},
+    {e:"🛏️", n:"Make Your Bed",      d:"Small effort, big impact.",          xp:15},
+    {e:"🫧", n:"Do The Dishes",      d:"Be a hero. Leave no mess behind.",   xp:20},
+    {e:"🧺", n:"Fold Laundry",       d:"Tidy now, thank yourself later.", xp:15, flag:"IF AVAILABLE"},
+    {e:"🎹", n:"Piano Practice — 15 Min", d:"Practice makes progress. Keep the music alive!", xp:20},
+    {e:"🎨", n:"Be A Creator",       d:"Create and publish something today! Share your gift with the world.", xp:30}
+  ];
+  var GOAL = QUESTS.reduce(function(s,q){return s+q.xp;},0); // fills to 100% when all done
+  var KEY = "morningQuest";
+  var CHEERS = ["You've got this, Quest Master! 💜","Keep going, hero! ⚔️","Amazing work! 🌟",
+                "Level up in progress! ✨","So close now! 🔥","You're on fire! 🐉"];
+
+  // ---- date helpers ----
+  function pad(n){ return (n<10?'0':'')+n; }
+  function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function parseYmd(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function dayDiff(a,b){ return Math.round((parseYmd(a)-parseYmd(b))/86400000); }
+
+  // ---- streak rewards ----
+  function streakBonus(s){ return s>0 ? s*10 : 0; }              // +10 XP per streak day
+  function milestoneFor(s){
+    if(s===3)  return "🔥 3-Day Streak — On Fire badge!";
+    if(s===7)  return "🏅 7-Day Streak — Week Warrior!";
+    if(s===14) return "⚡ 14-Day Streak — Unstoppable!";
+    if(s===30) return "👑 30-Day Streak — Quest Legend!";
+    if(s>30 && s%10===0) return "🌟 "+s+"-Day Streak — Legendary!";
+    return "";
+  }
+
+  // ---- parent notifications ----
+  // 1) Install the free "ntfy" app on your phone (App Store / Google Play).
+  // 2) In the app, tap + and subscribe to the EXACT topic below.
+  //    Change it to any private, hard-to-guess word so strangers can't post to it.
+  var NOTIFY = {
+    ntfyTopic: "mq-lcd-9f4k2x7q",   // <-- your private channel; subscribe to this in the ntfy app
+    slackWebhook: ""                // optional: paste a Slack Incoming Webhook URL to also post to Slack
+  };
+  function notify(title, message, tags, priority){
+    // HTTP header values must be Latin-1 only — strip anything else (e.g. emoji) so fetch can't throw.
+    var safeTitle = String(title).replace(/[^\x00-\xFF]/g, '').trim() || 'Morning Quest';
+    if(NOTIFY.ntfyTopic){
+      try{ fetch('https://ntfy.sh/'+NOTIFY.ntfyTopic, {
+        method:'POST', body:message,
+        headers:{ 'Title':safeTitle, 'Tags':tags||'', 'Priority':priority||'default' }
+      }); }catch(e){}
+    }
+    if(NOTIFY.slackWebhook){
+      try{ fetch(NOTIFY.slackWebhook, {
+        method:'POST', mode:'no-cors',
+        headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+        body:'payload='+encodeURIComponent(JSON.stringify({text:title+' — '+message}))
+      }); }catch(e){}
+    }
+  }
+
+  var state = load();
+  var qEl = document.getElementById('quests');
+
+  function load(){
+    var s;
+    try{ s = JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ s=null; }
+    if(!s) s={};
+    if(!s.done) s.done={};
+    if(typeof s.streak!=='number') s.streak=0;
+    if(typeof s.best!=='number')   s.best=0;
+    s.lastComplete = s.lastComplete || null;
+    s.notifiedDate = s.notifiedDate || null;
+    s.broke = false;
+    var today = ymd(new Date());
+    if(s.day !== today){ s.done={}; s.day=today; }          // new day → fresh checkmarks
+    if(s.lastComplete && s.streak>0 && dayDiff(today, s.lastComplete) >= 2){
+      s.streak = 0; s.broke = true;                          // missed a day → streak lost
+    }
+    return s;
+  }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  function render(){
+    qEl.innerHTML = "";
+    QUESTS.forEach(function(q,i){
+      var done = !!state.done[i];
+      var row = document.createElement('div');
+      row.className = "quest"+(done?" done":"");
+      row.innerHTML =
+        '<div class="emoji">'+q.e+'</div>'+
+        '<div class="txt"><div class="name">'+q.n+(q.flag?' <span class="flag">('+q.flag+')</span>':'')+'</div>'+
+        '<div class="desc">'+q.d+'</div></div>'+
+        '<div class="xp">+'+q.xp+' XP</div>'+
+        '<div class="box"></div>';
+      row.addEventListener('click', function(){ toggle(i); });
+      qEl.appendChild(row);
+    });
+    updateXP(false);
+    renderStreak();
+  }
+
+  function renderStreak(){
+    var el = document.getElementById('streak');
+    var s = state.streak||0, best = state.best||0;
+    var bestTag = best>0 ? '<span class="best">🏆 Best: '+best+'</span>' : '';
+    if(s>0){
+      el.className = 'streak';
+      el.innerHTML = '<span class="flame">🔥</span><span class="num">'+s+'</span>'+
+        '<span class="lbl">day streak</span>'+
+        '<span class="bonus">+'+streakBonus(s)+' bonus XP</span>'+bestTag;
+    } else if(state.broke){
+      el.className = 'streak broken';
+      el.innerHTML = '<span class="flame">💔</span><span class="lbl">Streak reset — finish all quests today to start a new one! 💪</span>'+bestTag;
+    } else {
+      el.className = 'streak';
+      el.innerHTML = '<span class="flame">🔥</span><span class="lbl">Finish all quests today to start your streak!</span>'+bestTag;
+    }
+  }
+
+  function toggle(i){
+    var wasComplete = isComplete();
+    state.done[i] = !state.done[i];
+    save();
+    var row = qEl.children[i];
+    row.classList.toggle('done', !!state.done[i]);
+    updateXP(true);
+    if(!wasComplete && isComplete()){
+      var r = awardStreak();       // credits the streak at most once per day
+      renderStreak();
+      celebrate(r);
+      var today = ymd(new Date());
+      if(state.notifiedDate !== today){   // notify once per completion; re-armed by Clear/new day
+        state.notifiedDate = today; save();
+        var msg = "Finished all morning quests! 🎉";
+        if(state.streak>0) msg += " "+state.streak+"-day streak (+"+streakBonus(state.streak)+" bonus XP).";
+        var ms = milestoneFor(state.streak);
+        if(ms) msg += " "+ms;
+        notify("Quest Complete", msg, "tada,white_check_mark", "high");
+      }
+    }
+  }
+
+  function awardStreak(){
+    var today = ymd(new Date());
+    if(state.lastComplete === today){ return {credited:false, streak:state.streak, bonus:streakBonus(state.streak), ms:""}; }
+    if(state.lastComplete && dayDiff(today, state.lastComplete) === 1){ state.streak = state.streak + 1; }
+    else { state.streak = 1; }
+    state.lastComplete = today; state.broke = false;
+    if(state.streak > state.best) state.best = state.streak;
+    save();
+    return {credited:true, streak:state.streak, bonus:streakBonus(state.streak), ms:milestoneFor(state.streak)};
+  }
+
+  function total(){ var t=0; QUESTS.forEach(function(q,i){ if(state.done[i]) t+=q.xp; }); return t; }
+  function isComplete(){ return QUESTS.every(function(q,i){ return state.done[i]; }); }
+
+  function updateXP(animateCheer){
+    var t = total();
+    var pct = Math.min(100, Math.round(t/GOAL*100));
+    document.getElementById('xpfill').style.width = pct+"%";
+    document.getElementById('xplabel').textContent = t+" / "+GOAL+" XP";
+    var doneCount = QUESTS.filter(function(q,i){return state.done[i];}).length;
+    var idx = Math.min(CHEERS.length-1, doneCount);
+    if(isComplete()) idx = CHEERS.length-1;
+    document.getElementById('cheertxt').textContent = CHEERS[idx];
+  }
+
+  function celebrate(r){
+    var p = document.getElementById('winmsg');
+    if(p && r){
+      var line = '200 XP earned — All-Day Tech Unlocked!';
+      if(r.streak>0) line += ' 🔥 '+r.streak+'-day streak (+'+r.bonus+' bonus XP).';
+      if(r.ms) line += ' '+r.ms;
+      line += ' 💜';
+      p.textContent = line;
+    }
+    document.getElementById('overlay').classList.add('show');
+    for(var i=0;i<80;i++) confetti();
+  }
+  function confetti(){
+    var c = document.createElement('div');
+    c.className='confetti';
+    var colors=['#ec4899','#ffcf3f','#9a52d6','#4ec06f','#5fa8e8','#ff9e2c'];
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=(Math.random()*100)+'vw';
+    var dur=2.4+Math.random()*2;
+    c.style.transition='transform '+dur+'s linear, opacity '+dur+'s linear';
+    document.body.appendChild(c);
+    requestAnimationFrame(function(){
+      c.style.transform='translateY(110vh) rotate('+(Math.random()*720-360)+'deg)';
+      c.style.opacity='0';
+    });
+    setTimeout(function(){ c.remove(); }, dur*1000+100);
+  }
+
+  document.getElementById('closewin').addEventListener('click', function(){
+    document.getElementById('overlay').classList.remove('show');
+  });
+  document.getElementById('reset').addEventListener('click', function(){
+    if(confirm('Clear today’s checkmarks? (Your streak and best score are kept.)')){
+      state.done = {}; state.day = ymd(new Date()); state.notifiedDate = null; save(); render();
+    }
+  });
+
+  var tn = document.getElementById('testnotify');
+  if(tn){ tn.addEventListener('click', function(){
+    notify("Test Alert", "ntfy is connected! You'll get a ping like this when the quest is completed. 🎉", "bell", "high");
+    alert("Test sent! Check your phone. If nothing arrives, make sure the ntfy app is subscribed to the exact topic and notifications are allowed.");
+  }); }
+
+  render();
+
+  // Streak was lost since last visit → tell the parent once, then persist so it won't repeat.
+  if(state.broke){
+    save();
+    notify("Streak Reset", "A day was missed — the morning-quest streak is back to 0. Might be worth a nudge! 💔", "broken_heart", "default");
+  }
+})();
+</script>
+</body>
+</html>
