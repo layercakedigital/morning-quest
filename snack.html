@@ -3,63 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#5c94fc">
-<title>Daily Quest — Pixel Kingdom</title>
+<meta name="theme-color" content="#ffcf3f">
+<title>Daily Quest — Snack Pals</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --sky:#5c94fc; --sky2:#8fb8ff; --green:#2aa028; --green2:#1c7a1c; --brick:#c8641c; --coin:#ffd21e; --red:#e03030;
-    --ink:#2a2410; --sub:#5a5030;
-    --tile:#fff4d2; --tile-b:#c8641c;
-    --xp:#e03030; --greentxt:#bff5c0;
-    --panel:#1c4a1c; --panel2:#2a7a2a;
+    --mustard:#ffcf3f; --ketchup:#e03030; --bun:#e0a85a; --brown:#8a4a2a; --teal:#2ee6c9; --cream:#fff4d8;
+    --ink:#3a2410; --sub:#7a5a30;
+    --tile:#fff4d8; --tile-b:#d99a3a;
+    --xp:#e03030; --green:#3ddc84; --greentxt:#bff5c0;
+    --panel:#7a3a1a; --panel2:#9a4e26;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0; overflow-x:hidden;}
   body{font-family:'Baloo 2',system-ui,sans-serif; color:var(--ink); min-height:100vh; position:relative;
-    display:flex; justify-content:center; padding:14px 10px 70px; background:#5c94fc;}
+    display:flex; justify-content:center; padding:14px 10px 70px; background:#ffcf3f;}
 
   .bg{position:fixed; inset:0; z-index:-1; overflow:hidden;}
-  .void{position:absolute; inset:0; background:linear-gradient(#5c94fc 0%, #8fb8ff 55%, #b8e0a0 100%);}
-  .cloud{position:absolute; width:56px; height:20px; background:#fff; border-radius:10px; opacity:.95;
-    box-shadow:14px -7px 0 0 #fff, 30px -2px 0 0 #fff, -12px 2px 0 0 #fff; image-rendering:pixelated;}
-  .cloud.c1{top:14%; animation:float1 36s linear infinite;}
-  .cloud.c2{top:28%; transform:scale(.7); animation:float2 48s linear infinite;}
-  .cloud.c3{top:44%; transform:scale(1.1); opacity:.85; animation:float1 60s linear infinite;}
-  @keyframes float1{from{left:-90px}to{left:110%}}
-  @keyframes float2{from{left:110%}to{left:-90px}}
-  .hills{position:absolute; left:0; right:0; bottom:52px; height:120px;
-    background:radial-gradient(60px 60px at 15% 100%, var(--green) 60%, transparent 62%),
-      radial-gradient(80px 80px at 45% 100%, var(--green2) 60%, transparent 62%),
-      radial-gradient(70px 70px at 78% 100%, var(--green) 60%, transparent 62%);}
-  .qblock{position:absolute; width:26px; height:26px; background:linear-gradient(#f5b942,#e0951c); border:3px solid #8a4a08; border-radius:4px;
-    box-shadow:inset 0 0 0 2px #ffd980; color:#8a4a08; font-family:'Press Start 2P'; font-size:12px; text-align:center; line-height:22px; animation:qbob 2.4s ease-in-out infinite;}
-  .qblock.q1{top:26%; left:12%;} .qblock.q2{top:20%; right:14%; animation-delay:.6s;}
-  @keyframes qbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-  .ground{position:absolute; left:0; right:0; bottom:0; height:52px; background:linear-gradient(#d07a2c,#a85818);
-    background-image:repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 2px, transparent 2px 26px), repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 2px, transparent 2px 26px);
-    border-top:4px solid #7a3a08;}
+  .void{position:absolute; inset:0; background:linear-gradient(#ffd86a 0%, #ffb84a 55%, #ff8a3c 100%);}
+  .stripes{position:absolute; inset:0; opacity:.16; background:repeating-linear-gradient(90deg,#e03030 0 40px, transparent 40px 80px);}
+  .floor{position:absolute; left:-20%; right:-20%; bottom:0; height:30vh;
+    background-image:linear-gradient(45deg,rgba(224,48,48,.4) 25%,transparent 25%,transparent 75%,rgba(224,48,48,.4) 75%),linear-gradient(45deg,rgba(224,48,48,.4) 25%,transparent 25%,transparent 75%,rgba(224,48,48,.4) 75%);
+    background-size:52px 52px; background-position:0 0,26px 26px; transform:perspective(300px) rotateX(64deg); transform-origin:bottom center;
+    animation:floorscroll 6s linear infinite; opacity:.5;
+    -webkit-mask-image:linear-gradient(to top,#000 35%, transparent); mask-image:linear-gradient(to top,#000 35%, transparent);}
+  @keyframes floorscroll{from{background-position:0 0,26px 26px}to{background-position:0 52px,26px 78px}}
 
   #balloons{position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden;}
-  .coin{position:absolute; bottom:-40px; font-size:26px; line-height:1; pointer-events:auto; cursor:pointer; will-change:transform; filter:drop-shadow(0 2px 2px rgba(0,0,0,.2));}
-  .coin:active{transform:scale(.85);}
+  .snack{position:absolute; bottom:-44px; font-size:26px; line-height:1; pointer-events:auto; cursor:pointer; will-change:transform; filter:drop-shadow(0 2px 2px rgba(0,0,0,.2));}
+  .snack:active{transform:scale(.85);}
   @keyframes rise{to{transform:translateY(-118vh) rotate(var(--sway));}}
 
-  .bunting{position:fixed; top:0; left:0; right:0; height:8px; z-index:4; background:repeating-linear-gradient(90deg,#e03030 0 14px,#fff 14px 28px);}
+  .bunting{position:fixed; top:0; left:0; right:0; height:10px; z-index:4; background:repeating-linear-gradient(90deg,#e03030 0 14px,#fff 14px 28px);}
+
+  .dragnote{text-align:center; margin:10px 6px 0; font-weight:800; font-size:12.5px; color:#fff; background:rgba(30,20,10,.5); border:1px dashed rgba(255,255,255,.5); border-radius:12px; padding:7px 12px;}
 
   #troupe{position:fixed; inset:0; z-index:20; pointer-events:none;}
-  .toon{position:fixed; width:54px; height:54px; pointer-events:auto; cursor:grab; touch-action:none;
-    animation:bob 2.8s ease-in-out infinite; filter:drop-shadow(0 4px 4px rgba(0,0,0,.3));}
+  .toon{position:fixed; width:56px; height:56px; pointer-events:auto; cursor:grab; touch-action:none; animation:bob 2.8s ease-in-out infinite; filter:drop-shadow(0 4px 4px rgba(0,0,0,.3));}
   .toon svg{width:100%; height:100%; display:block;}
   .toon.grab{cursor:grabbing; animation:none; z-index:40;}
   .toon.hop{animation:hop .5s ease;}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-  @keyframes hop{0%{transform:translateY(0)}30%{transform:translateY(-24px) scale(1.1)}60%{transform:translateY(0) scale(.96)}100%{transform:translateY(0)}}
+  @keyframes hop{0%{transform:translateY(0)}30%{transform:translateY(-22px) scale(1.1)}60%{transform:translateY(0) scale(.96)}100%{transform:translateY(0)}}
   .toonbubble{position:absolute; bottom:60px; left:50%; transform:translateX(-50%) scale(.9); white-space:nowrap; max-width:200px; overflow:hidden; text-overflow:ellipsis;
-    background:#fff; color:var(--ink); font-weight:800; font-size:12px; padding:5px 10px; border-radius:12px; border:2px solid #7a3a08;
-    box-shadow:0 3px 0 rgba(0,0,0,.2); opacity:0; transition:.2s; pointer-events:none;}
+    background:#fff; color:var(--ink); font-weight:800; font-size:12px; padding:5px 10px; border-radius:12px; border:2px solid var(--ketchup); box-shadow:0 3px 0 rgba(0,0,0,.2); opacity:0; transition:.2s; pointer-events:none;}
   .toonbubble.show{opacity:1; transform:translateX(-50%) scale(1);}
   .toonbubble::after{content:""; position:absolute; bottom:-7px; left:50%; transform:translateX(-50%); border-left:7px solid transparent; border-right:7px solid transparent; border-top:7px solid #fff;}
 
@@ -69,88 +58,78 @@
   .mascot:active{animation:none;}
   .mascot.pop{animation:pop .5s ease;}
   @keyframes pop{0%{transform:scale(1)}30%{transform:scale(1.18) rotate(-6deg)}60%{transform:scale(.94) rotate(5deg)}100%{transform:scale(1)}}
-  .bubble{display:inline-block; max-width:280px; margin:6px auto 0; padding:8px 14px; background:#fff; color:var(--ink); font-weight:800; font-size:14px; border-radius:14px; position:relative; border:2px solid #7a3a08; box-shadow:0 4px 0 rgba(0,0,0,.2);
-    opacity:0; transform:translateY(6px) scale(.96); transition:.2s; pointer-events:none;}
+  .bubble{display:inline-block; max-width:280px; margin:6px auto 0; padding:8px 14px; background:#fff; color:var(--ink); font-weight:800; font-size:14px; border-radius:14px; position:relative; border:2px solid var(--ketchup); box-shadow:0 4px 0 rgba(0,0,0,.2); opacity:0; transform:translateY(6px) scale(.96); transition:.2s; pointer-events:none;}
   .bubble.show{opacity:1; transform:translateY(0) scale(1);}
   .bubble::after{content:""; position:absolute; top:-8px; left:50%; transform:translateX(-50%); border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:8px solid #fff;}
 
   .titlewrap{text-align:center; margin-top:6px;}
-  .title-plate{display:inline-block; background:linear-gradient(#e03030,#b81c1c); border:4px solid #fff; border-radius:12px; padding:12px 24px 10px;
-    box-shadow:0 0 0 4px #7a1010, 0 8px 0 #7a1010, 0 10px 18px rgba(0,0,0,.35);}
+  .title-plate{display:inline-block; background:linear-gradient(var(--ketchup),#b81c1c); border:4px solid #fff; border-radius:14px; padding:12px 24px 10px; box-shadow:0 0 0 4px var(--mustard), 0 8px 0 #7a1010, 0 10px 18px rgba(0,0,0,.3);}
   .title-plate h1{margin:0; font-family:'Press Start 2P',cursive; font-size:22px; color:#fff; letter-spacing:1px; text-shadow:2px 2px 0 #7a1010;}
-  .subband{display:inline-block; margin-top:8px; background:var(--green); border:2px solid #fff; color:#fff; font-weight:800; letter-spacing:1px; padding:5px 16px; font-size:12px; border-radius:20px; box-shadow:0 3px 0 var(--green2);}
-  .subband .spark{color:var(--coin);}
-  .intro{text-align:center; font-weight:800; color:#12306a; margin:12px 6px 4px; font-size:15px; text-shadow:0 1px 2px rgba(255,255,255,.5);}
+  .subband{display:inline-block; margin-top:8px; background:var(--brown); border:2px solid #fff; color:#fff; font-weight:800; letter-spacing:1px; padding:5px 16px; font-size:12px; border-radius:20px; box-shadow:0 3px 0 #5a2e12;}
+  .subband .spark{color:var(--mustard);}
+  .intro{text-align:center; font-weight:800; color:#5a2e12; margin:12px 6px 4px; font-size:15px; text-shadow:0 1px 2px rgba(255,255,255,.4);}
 
-  .streak{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:10px 4px 0; padding:9px 12px; text-align:center;
-    background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--coin); border-radius:14px; color:#fff; font-weight:800; box-shadow:0 4px 0 #0f2e0f;}
-  .streak.broken{border-color:var(--red);}
+  .streak{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:10px 4px 0; padding:9px 12px; text-align:center; background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--mustard); border-radius:14px; color:#fff; font-weight:800; box-shadow:0 4px 0 #4a1e0a;}
+  .streak.broken{border-color:#ffcaca;}
   .streak .flame{font-size:22px; line-height:1;}
-  .streak .num{font-family:'Press Start 2P',cursive; font-size:15px; color:var(--coin);}
-  .streak .lbl{font-size:12.5px; color:#d6ffd6;}
-  .streak .bonus{font-size:12.5px; color:#fff2a8;}
+  .streak .num{font-family:'Press Start 2P',cursive; font-size:15px; color:var(--mustard);}
+  .streak .lbl{font-size:12.5px; color:#ffe0c0;}
+  .streak .bonus{font-size:12.5px; color:#bff5c0;}
   .streak .best{font-size:12px; color:#fff;}
 
-  .scroll{background:linear-gradient(#fff6dc,#ffefc0); border:4px solid #fff; border-radius:18px; padding:14px 12px; margin-top:10px;
-    box-shadow:0 0 0 4px var(--green), 0 12px 22px rgba(0,0,0,.3);}
+  .scroll{background:linear-gradient(#fff7e4,#ffedc4); border:4px solid #fff; border-radius:18px; padding:14px 12px; margin-top:10px; box-shadow:0 0 0 4px var(--ketchup), 0 12px 22px rgba(0,0,0,.3);}
   .xpwrap{margin:2px 4px 12px;}
   .xprow{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;}
-  .xprow b{font-family:'Press Start 2P',cursive; font-size:12px; color:var(--green2);}
+  .xprow b{font-family:'Press Start 2P',cursive; font-size:12px; color:var(--ketchup);}
   .xprow span{font-weight:800; color:var(--sub); font-size:14px;}
-  .xptrack{height:22px; background:#e7d9a8; border:3px solid #c8a848; border-radius:12px; overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,.2);}
-  .xpfill{height:100%; width:0%; border-radius:9px; background:linear-gradient(90deg,#ffd21e,#e03030,#2aa028); background-size:200% 100%; animation:rainbow 4s linear infinite; transition:width .45s cubic-bezier(.3,1.2,.5,1);}
+  .xptrack{height:22px; background:#e7d3a8; border:3px solid #c99a48; border-radius:12px; overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,.2);}
+  .xpfill{height:100%; width:0%; border-radius:9px; background:linear-gradient(90deg,#ffd21e,#e03030,#8a4a2a); background-size:200% 100%; animation:rainbow 4s linear infinite; transition:width .45s cubic-bezier(.3,1.2,.5,1);}
   @keyframes rainbow{to{background-position:200% 0}}
 
-  .quest{display:flex; align-items:center; gap:10px; background:linear-gradient(var(--tile),#ffe9a8); border:3px solid var(--tile-b); border-radius:12px;
-    padding:9px 10px; margin:9px 2px; cursor:pointer; user-select:none; box-shadow:0 3px 0 rgba(0,0,0,.12); transition:transform .08s ease, opacity .2s;}
+  .quest{display:flex; align-items:center; gap:10px; background:linear-gradient(var(--tile),#ffe9b8); border:3px solid var(--tile-b); border-radius:12px; padding:9px 10px; margin:9px 2px; cursor:pointer; user-select:none; box-shadow:0 3px 0 rgba(0,0,0,.12); transition:transform .08s ease, opacity .2s;}
   .quest:active{transform:scale(.98);}
   .quest .emoji{font-size:26px; width:38px; text-align:center; flex:none;}
   .quest .txt{flex:1; min-width:0;}
   .quest .name{font-weight:800; font-size:16px; color:var(--ink); line-height:1.1; text-transform:uppercase; letter-spacing:.3px;}
-  .quest .name .flag2{font-size:10px; color:var(--red); font-weight:800; letter-spacing:.5px;}
+  .quest .name .flag2{font-size:10px; color:var(--brown); font-weight:800; letter-spacing:.5px;}
   .quest .desc{font-size:12.5px; color:var(--sub); font-weight:600; line-height:1.2;}
   .quest .xp{font-family:'Press Start 2P',cursive; font-size:11px; color:var(--xp); flex:none; white-space:nowrap;}
-  .box{flex:none; width:30px; height:30px; border-radius:7px; border:3px solid var(--green); background:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; color:#fff; transition:.15s;}
+  .box{flex:none; width:30px; height:30px; border-radius:7px; border:3px solid var(--ketchup); background:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; color:#fff; transition:.15s;}
   .quest.done{opacity:.76;}
-  .quest.done .name, .quest.done .desc{text-decoration:line-through; text-decoration-color:rgba(42,36,16,.5);}
-  .quest.done .box{background:var(--green); border-color:var(--green2); transform:scale(1.05);}
+  .quest.done .name, .quest.done .desc{text-decoration:line-through; text-decoration-color:rgba(58,36,16,.5);}
+  .quest.done .box{background:var(--green); border-color:#22a862; transform:scale(1.05);}
   .quest.done .box::after{content:"✓";}
 
   .footer{display:flex; gap:10px; align-items:stretch; margin:14px 4px 2px;}
-  .reward{flex:1; background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--coin); border-radius:12px; color:#fff; text-align:center; padding:10px 8px; box-shadow:0 4px 0 #0f2e0f;}
-  .reward .lbl{font-family:'Press Start 2P',cursive; font-size:10px; color:var(--coin); letter-spacing:.5px;}
+  .reward{flex:1; background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--mustard); border-radius:12px; color:#fff; text-align:center; padding:10px 8px; box-shadow:0 4px 0 #4a1e0a;}
+  .reward .lbl{font-family:'Press Start 2P',cursive; font-size:10px; color:var(--mustard); letter-spacing:.5px;}
   .reward .big{font-family:'Press Start 2P',cursive; font-size:16px; color:#fff; margin:8px 0 4px;}
   .reward .unlock{font-weight:800; font-size:12px; color:#bff5c0;}
-  .cheer{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:2px solid var(--red); border-radius:12px; text-align:center; padding:10px; font-weight:800; color:var(--ink); font-size:14px;}
+  .cheer{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#fff; border:2px solid var(--ketchup); border-radius:12px; text-align:center; padding:10px; font-weight:800; color:var(--ink); font-size:14px;}
   .cheer .tent{font-size:32px; line-height:1;}
 
-  .hint{text-align:center; color:#12306a; font-size:12px; margin:14px 6px 0; font-weight:700;}
-  .reset{display:block; margin:10px auto 0; background:none; border:none; color:#12306a; font-weight:800; font-size:13px; opacity:.85; text-decoration:underline; cursor:pointer;}
+  .hint{text-align:center; color:#5a2e12; font-size:12px; margin:14px 6px 0; font-weight:700;}
+  .reset{display:block; margin:10px auto 0; background:none; border:none; color:#5a2e12; font-weight:800; font-size:13px; opacity:.85; text-decoration:underline; cursor:pointer;}
 
-  .soundbtn{position:fixed; top:16px; right:10px; z-index:100; background:var(--green); color:#fff; border:2px solid #fff; border-radius:20px; padding:6px 12px; font-family:'Baloo 2'; font-weight:800; font-size:13px; cursor:pointer; box-shadow:0 3px 0 var(--green2);}
+  .soundbtn{position:fixed; top:14px; right:10px; z-index:100; background:var(--brown); color:#fff; border:2px solid #fff; border-radius:20px; padding:6px 12px; font-family:'Baloo 2'; font-weight:800; font-size:13px; cursor:pointer; box-shadow:0 3px 0 #5a2e12;}
 
-  .overlay{position:fixed; inset:0; background:rgba(12,30,60,.82); display:none; align-items:center; justify-content:center; z-index:80; padding:24px; text-align:center;}
+  .overlay{position:fixed; inset:0; background:rgba(60,30,10,.82); display:none; align-items:center; justify-content:center; z-index:80; padding:24px; text-align:center;}
   .overlay.show{display:flex;}
-  .winbox{background:linear-gradient(#fff6dc,#ffe9a8); border:5px solid var(--red); border-radius:20px; padding:24px 22px; max-width:360px; box-shadow:0 0 40px rgba(255,210,30,.7);}
+  .winbox{background:linear-gradient(#fff7e4,#ffe9b8); border:5px solid var(--ketchup); border-radius:20px; padding:24px 22px; max-width:360px; box-shadow:0 0 40px rgba(255,207,63,.7);}
   .winbox .d{font-size:56px;}
-  .winbox h2{font-family:'Press Start 2P',cursive; font-size:16px; color:var(--red); margin:8px 0; text-shadow:2px 2px 0 #ffd980;}
+  .winbox h2{font-family:'Press Start 2P',cursive; font-size:15px; color:var(--ketchup); margin:8px 0; text-shadow:2px 2px 0 #ffd980;}
   .winbox p{font-weight:800; color:var(--sub); font-size:15px; margin:6px 0 16px;}
-  .winbox .go{font-family:'Baloo 2'; font-weight:800; font-size:16px; color:#fff; background:linear-gradient(var(--green),var(--green2)); border:3px solid #0f2e0f; border-radius:12px; padding:11px 24px; cursor:pointer; box-shadow:0 4px 0 #0f2e0f;}
+  .winbox .go{font-family:'Baloo 2'; font-weight:800; font-size:16px; color:#fff; background:linear-gradient(var(--ketchup),#b81c1c); border:3px solid #7a1010; border-radius:12px; padding:11px 24px; cursor:pointer; box-shadow:0 4px 0 #7a1010;}
 
   .confetti{position:fixed; width:9px; height:14px; z-index:90; pointer-events:none; border-radius:2px;}
 </style>
 </head>
 <body>
-<a href="./" style="position:fixed;top:16px;left:10px;z-index:200;background:#2aa028;color:#fff;border:2px solid #fff;border-radius:20px;padding:5px 11px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 3px 0 #1c7a1c;">🏠 Worlds</a>
+<a href="./" style="position:fixed;top:14px;left:10px;z-index:200;background:#8a4a2a;color:#fff;border:2px solid #fff;border-radius:20px;padding:5px 11px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 3px 0 #5a2e12;">🏠 Worlds</a>
 <div class="bg">
   <div class="void"></div>
-  <div class="cloud c1"></div>
-  <div class="cloud c2"></div>
-  <div class="cloud c3"></div>
-  <div class="qblock q1">?</div>
-  <div class="qblock q2">?</div>
-  <div class="hills"></div>
-  <div class="ground"></div>
+  <div class="stripes"></div>
+  <div class="floor"></div>
 </div>
 <div class="bunting"></div>
 <div id="balloons"></div>
@@ -160,23 +139,23 @@
 
 <div class="wrap">
   <div class="stage">
-    <svg class="mascot" id="mascot" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-label="hero"></svg>
+    <svg class="mascot" id="mascot" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-label="pal"></svg>
     <div class="bubble" id="bubble"></div>
   </div>
 
   <div class="titlewrap">
     <div class="title-plate"><h1>DAILY QUEST</h1></div>
-    <div><span class="subband"><span class="spark">★</span> PIXEL KINGDOM <span class="spark">★</span></span></div>
+    <div><span class="subband"><span class="spark">🌭</span> SNACK PALS <span class="spark">🌭</span></span></div>
   </div>
 
-  <div class="intro">Complete your quests to unlock all-day tech! ⭐</div>
+  <div class="intro">Complete your quests to unlock all-day tech! 🌭</div>
+  <div class="dragnote">👆 Tap the snack pals to chat — press &amp; hold to drag them anywhere!</div>
 
-  <div style="text-align:center;margin:10px 6px 0;font-weight:800;font-size:12.5px;color:#fff;background:rgba(20,16,30,.55);border:1px dashed rgba(255,255,255,.5);border-radius:12px;padding:7px 12px;">👆 Tap the little characters to chat — press &amp; hold to drag them anywhere!</div>
   <div class="streak" id="streak"></div>
 
   <div class="scroll">
     <div class="xpwrap">
-      <div class="xprow"><b>QUEST XP</b><span id="xplabel">0 / 165 XP</span></div>
+      <div class="xprow"><b>QUEST XP</b><span id="xplabel">0 / 200 XP</span></div>
       <div class="xptrack"><div class="xpfill" id="xpfill"></div></div>
     </div>
     <div id="quests"></div>
@@ -189,21 +168,20 @@
       <div class="unlock" id="unlockmsg">🎮 ALL-DAY TECH UNLOCKED!</div>
     </div>
     <div class="cheer">
-      <div class="tent">🪙</div>
-      <div id="cheertxt">Warp in when you're ready!</div>
+      <div class="tent">🍔</div>
+      <div id="cheertxt">The snack squad's hungry for wins!</div>
     </div>
   </div>
 
-  <div class="hint">🍄 Tap the pals to chat — or press &amp; hold to drag them around!</div>
   <button class="reset" id="reset">↺ Clear today’s checkmarks</button>
   <button class="reset" id="testnotify" style="opacity:.6; font-size:12px;">🔔 Send test notification</button>
 </div>
 
 <div class="overlay" id="overlay">
   <div class="winbox">
-    <div class="d">⭐🪙</div>
-    <h2>LEVEL COMPLETE!</h2>
-    <p id="winmsg">200 XP earned — All-Day Tech Unlocked! You cleared the day! ⭐</p>
+    <div class="d">🌭🎉</div>
+    <h2>YUMMY! ALL DONE!</h2>
+    <p id="winmsg">200 XP earned — All-Day Tech Unlocked! The snack squad is proud. 🌭</p>
     <button class="go" id="closewin">🎮 Let's Play!</button>
   </div>
 </div>
@@ -224,25 +202,23 @@
   ];
   var GOAL = QUESTS.reduce(function(s,q){return s+q.xp;},0);
   var KEY = "dailyQuest";
-  var CHEERS = ["Warp in when you're ready!","Powering up… ⭐","Nice moves, hero! 🪙",
-                "The kingdom cheers for you! 🎉","One more block to go! 🧱","LEVEL COMPLETE! 🏁"];
-  var MOTIVATE = ["Coin get! Nice! 🪙","Power-up! ⭐","Wahoo! Keep going! 🎉","1-UP for you! 💚","Jump for joy! ⬆️",
-    "You're on fire! 🔥","Super work, hero! 🌟","Bonus round! 🪙","Ka-ching! 💰","To the next level! 🏁"];
-  var GREET = ["Hiya, hero! 👋","Grab a coin! 🪙","Let's-a... let's go! ⭐","Boing! 🍄","I'm your #1 fan!",
-    "Drag me around! ✨","Wahoo! 🎉","Ready player? 🎮","High jump! ⬆️","Pow! 💥"];
+  var CHEERS = ["The snack squad's hungry for wins!","Warming up the grill… 🔥","Tasty progress! 🍟","Everyone's cheering! 🎉","One more bite to go! 🍔","YUMMY! ALL DONE! 🎊"];
+  var MOTIVATE = ["Delicious work! 🍔","Nom nom, nice! 🌭","You're on a roll! 🥖","So tasty! 🍟","Sweet! Keep going! 🍩","High five! ✋","Chef's kiss! 😙","Yum! 🎈","Extra sprinkles for you! 🍩","Best snack buddy ever! 💛"];
+  var GREET = ["Hiya, buddy! 👋","Want a snack? 🍟","Let's have fun! 🎉","Ketchup or mustard? 🌭","I'm your #1 pal!","Drag me around! ✨","Tee-hee! 😄","Snack break later? 🍔","Boop! 🍩","You + me = yum! 💛"];
 
   function pad(n){ return (n<10?'0':'')+n; }
   function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
   function parseYmd(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
   function dayDiff(a,b){ return Math.round((parseYmd(a)-parseYmd(b))/86400000); }
   function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+  var REQUIRED = [0,1,2,3,5];
 
   function streakBonus(s){ return s>0 ? s*10 : 0; }
   function milestoneFor(s){
-    if(s===3)  return "🔥 3-Day Streak — Power-Up!";
-    if(s===7)  return "🏅 7-Day Streak — Super Star!";
-    if(s===14) return "⚡ 14-Day Streak — Warp Zone!";
-    if(s===30) return "👑 30-Day Streak — Kingdom Hero!";
+    if(s===3)  return "🔥 3-Day Streak — Snack Rookie!";
+    if(s===7)  return "🏅 7-Day Streak — Head Chef!";
+    if(s===14) return "⚡ 14-Day Streak — Flavor Master!";
+    if(s===30) return "👑 30-Day Streak — Snack Legend!";
     if(s>30 && s%10===0) return "🌟 "+s+"-Day Streak — Legendary!";
     return "";
   }
@@ -257,11 +233,10 @@
       body:'payload='+encodeURIComponent(JSON.stringify({text:title+' — '+message}))}); }catch(e){} }
   }
 
-  /* ============ ORIGINAL PLATFORMER CHIPTUNE ============ */
   var soundOn = (localStorage.getItem('dq_sound')||'on')==='on';
   var audio = { ctx:null, master:null, timer:null, step:0 };
-  var MELODY = [523.25,587.33,659.25,783.99, 659.25,587.33,523.25,0, 587.33,659.25,698.46,880.00, 783.99,659.25,523.25,0];
-  var BASS   = [130.81,130.81,196.00,196.00,220.00,220.00,174.61,174.61];
+  var MELODY = [523.25,659.25,587.33,659.25, 698.46,659.25,523.25,0, 587.33,698.46,783.99,698.46, 587.33,523.25,392.00,0];
+  var BASS   = [130.81,130.81,174.61,174.61,196.00,196.00,146.83,146.83];
   function ensureCtx(){
     if(!audio.ctx){ var AC = window.AudioContext||window.webkitAudioContext; if(!AC) return;
       audio.ctx = new AC(); audio.master = audio.ctx.createGain(); audio.master.gain.value = 0.7; audio.master.connect(audio.ctx.destination); }
@@ -277,14 +252,14 @@
   }
   function musicTick(){
     if(!soundOn||!audio.ctx) return;
-    var f=MELODY[audio.step]; if(f){ hit(f,0.13,'square',0.05); }
+    var f=MELODY[audio.step]; if(f){ hit(f,0.14,'square',0.05); }
     if(audio.step%2===0){ var b=BASS[audio.step/2]; if(b) hit(b,0.2,'triangle',0.08); }
     audio.step=(audio.step+1)%MELODY.length;
   }
-  function startMusic(){ ensureCtx(); if(audio.ctx && !audio.timer){ audio.timer=setInterval(musicTick,132); } }
+  function startMusic(){ ensureCtx(); if(audio.ctx && !audio.timer){ audio.timer=setInterval(musicTick,138); } }
   function stopMusic(){ if(audio.timer){ clearInterval(audio.timer); audio.timer=null; } }
   function blip(){ if(!soundOn) return; ensureCtx(); hit(784,0.08,'square',0.06); }
-  function coinSfx(){ if(!soundOn) return; ensureCtx(); if(!audio.ctx) return; hit(988,0.08,'square',0.06); setTimeout(function(){ hit(1319,0.14,'square',0.06); },70); }
+  function nom(){ if(!soundOn) return; ensureCtx(); if(!audio.ctx) return; hit(300,0.09,'sawtooth',0.06); setTimeout(function(){ hit(220,0.1,'sawtooth',0.05); },60); }
   var soundBtn=document.getElementById('soundbtn');
   function paintSound(){ soundBtn.textContent=(soundOn?'🔊':'🔇')+' Music'; }
   paintSound();
@@ -293,7 +268,6 @@
   var firstGesture=function(){ if(soundOn) startMusic(); window.removeEventListener('pointerdown',firstGesture); };
   window.addEventListener('pointerdown', firstGesture);
 
-  /* ============ STATE ============ */
   var state = load();
   var qEl = document.getElementById('quests');
   function load(){
@@ -341,7 +315,7 @@
     state.done[i] = nowDone; save();
     qEl.children[i].classList.toggle('done', nowDone);
     updateXP();
-    if(nowDone){ coinSfx(); toonReact(rand(MOTIVATE)); }
+    if(nowDone){ nom(); toonReact(rand(MOTIVATE)); }
     if(!wasComplete && isComplete()){
       var r = awardStreak(); renderStreak(); celebrate(r);
       var today = ymd(new Date());
@@ -350,7 +324,7 @@
         var msg = "Finished all daily quests! 🎉";
         if(state.streak>0) msg += " "+state.streak+"-day streak (+"+streakBonus(state.streak)+" bonus XP).";
         var ms = milestoneFor(state.streak); if(ms) msg += " "+ms;
-        notify("Level Complete", msg, "tada,star", "high");
+        notify("Yummy! Quests Complete", msg, "tada,hotdog", "high");
       }
     }
   }
@@ -384,7 +358,7 @@
       var line = '200 XP earned — All-Day Tech Unlocked!';
       if(r.streak>0) line += ' 🔥 '+r.streak+'-day streak (+'+r.bonus+' bonus XP).';
       if(r.ms) line += ' '+r.ms;
-      line += ' You cleared the day! ⭐'; p.textContent = line;
+      line += ' The snack squad is proud. 🌭'; p.textContent = line;
     }
     document.getElementById('overlay').classList.add('show');
     allToonsCheer();
@@ -392,7 +366,7 @@
   }
   function confetti(x,y){
     var c = document.createElement('div'); c.className='confetti';
-    var colors=['#ffd21e','#e03030','#2aa028','#5c94fc','#fff','#ff8a3c'];
+    var colors=['#ffcf3f','#e03030','#8a4a2a','#2ee6c9','#6fbf3a','#ff9ec7'];
     c.style.background=colors[Math.floor(Math.random()*colors.length)];
     c.style.left=x+'px'; c.style.top=y+'px';
     var dur=2.4+Math.random()*2, dx=(Math.random()*200-100);
@@ -402,62 +376,55 @@
     setTimeout(function(){ c.remove(); }, dur*1000+100);
   }
 
-  /* floating coins */
   var noteLayer=document.getElementById('balloons');
-  function spawnCoin(){
+  var GLYPHS=['🌭','🍔','🍟','🍩','🥤','🌮'];
+  function spawnSnack(){
     if(document.hidden || noteLayer.children.length>4) return;
-    var b=document.createElement('div'); b.className='coin'; b.textContent='🪙';
+    var b=document.createElement('div'); b.className='snack'; b.textContent=rand(GLYPHS);
     b.style.left=(6+Math.random()*84)+'vw';
     b.style.setProperty('--sway',(Math.random()*30-15)+'deg');
     b.style.animation='rise '+(9+Math.random()*6)+'s linear forwards';
-    b.addEventListener('click', function(){ coinSfx(); var r=b.getBoundingClientRect();
+    b.addEventListener('click', function(){ nom(); var r=b.getBoundingClientRect();
       for(var i=0;i<14;i++) confetti(r.left+r.width/2, r.top+r.height/2); b.remove(); });
     b.addEventListener('animationend', function(){ b.remove(); });
     noteLayer.appendChild(b);
   }
-  setInterval(spawnCoin, 2500); setTimeout(spawnCoin, 900);
+  setInterval(spawnSnack, 2600); setTimeout(spawnSnack, 900);
 
-  /* ============ KINGDOM PALS (original) ============ */
-  var HERO = '<rect x="4" y="2" width="8" height="1" fill="#c01818"/><rect x="3" y="3" width="10" height="2" fill="#e03030"/>'+
-    '<rect x="7" y="1" width="2" height="1" fill="#ffd21e"/>'+
-    '<rect x="4" y="5" width="8" height="4" fill="#ffd0a8"/>'+
-    '<rect x="6" y="6" width="1" height="2" fill="#3a2b20"/><rect x="9" y="6" width="1" height="2" fill="#3a2b20"/>'+
-    '<rect x="5" y="8" width="1" height="1" fill="#ff9e8a"/><rect x="10" y="8" width="1" height="1" fill="#ff9e8a"/>'+
-    '<rect x="7" y="8" width="2" height="1" fill="#a05030"/>'+
-    '<rect x="4" y="9" width="8" height="5" fill="#2aa028"/><rect x="7" y="9" width="2" height="5" fill="#ffd21e"/>'+
-    '<rect x="3" y="9" width="1" height="3" fill="#2aa028"/><rect x="12" y="9" width="1" height="3" fill="#2aa028"/>'+
-    '<rect x="4" y="14" width="3" height="2" fill="#6b3a1e"/><rect x="9" y="14" width="3" height="2" fill="#6b3a1e"/>';
-  var MUSH = '<rect x="4" y="2" width="8" height="1" fill="#c01818"/><rect x="3" y="3" width="10" height="3" fill="#e03030"/>'+
-    '<rect x="2" y="4" width="1" height="2" fill="#e03030"/><rect x="13" y="4" width="1" height="2" fill="#e03030"/>'+
-    '<rect x="5" y="4" width="2" height="2" fill="#fff"/><rect x="9" y="4" width="2" height="2" fill="#fff"/>'+
-    '<rect x="4" y="6" width="8" height="1" fill="#c01818"/>'+
-    '<rect x="4" y="7" width="8" height="6" fill="#fff2dc"/>'+
-    '<rect x="6" y="8" width="1" height="2" fill="#3a2b20"/><rect x="9" y="8" width="1" height="2" fill="#3a2b20"/>'+
-    '<rect x="5" y="10" width="1" height="1" fill="#ffc0b0"/><rect x="10" y="10" width="1" height="1" fill="#ffc0b0"/>'+
-    '<rect x="7" y="10" width="2" height="1" fill="#c88070"/>'+
-    '<rect x="5" y="13" width="2" height="2" fill="#fff2dc"/><rect x="9" y="13" width="2" height="2" fill="#fff2dc"/>';
-  var STAR = '<rect x="7" y="1" width="2" height="1" fill="#ffd21e"/><rect x="6" y="2" width="4" height="2" fill="#ffd21e"/>'+
-    '<rect x="3" y="4" width="10" height="3" fill="#ffd21e"/><rect x="4" y="7" width="8" height="2" fill="#ffd21e"/>'+
-    '<rect x="5" y="9" width="2" height="3" fill="#ffd21e"/><rect x="9" y="9" width="2" height="3" fill="#ffd21e"/>'+
-    '<rect x="6" y="5" width="1" height="2" fill="#3a2b20"/><rect x="9" y="5" width="1" height="2" fill="#3a2b20"/>'+
-    '<rect x="7" y="7" width="2" height="1" fill="#a05030"/>';
-  var BLOCK = '<rect x="3" y="3" width="10" height="10" fill="#f0a020"/><rect x="3" y="3" width="10" height="1" fill="#ffd060"/>'+
-    '<rect x="3" y="12" width="10" height="1" fill="#b06010"/>'+
-    '<rect x="4" y="4" width="1" height="1" fill="#fff"/><rect x="11" y="4" width="1" height="1" fill="#fff"/><rect x="4" y="11" width="1" height="1" fill="#fff"/><rect x="11" y="11" width="1" height="1" fill="#fff"/>'+
-    '<rect x="6" y="5" width="3" height="1" fill="#7a3a08"/><rect x="8" y="6" width="1" height="1" fill="#7a3a08"/><rect x="7" y="7" width="1" height="1" fill="#7a3a08"/><rect x="7" y="9" width="1" height="1" fill="#7a3a08"/>'+
-    '<rect x="4" y="13" width="2" height="2" fill="#6b3a1e"/><rect x="10" y="13" width="2" height="2" fill="#6b3a1e"/>';
-  var CLOUDP = '<rect x="5" y="4" width="6" height="1" fill="#fff"/><rect x="3" y="5" width="10" height="4" fill="#fff"/>'+
-    '<rect x="4" y="9" width="8" height="1" fill="#e6eefc"/>'+
-    '<rect x="6" y="6" width="1" height="2" fill="#3a4a6a"/><rect x="9" y="6" width="1" height="2" fill="#3a4a6a"/>'+
-    '<rect x="5" y="8" width="1" height="1" fill="#bcd0ee"/><rect x="10" y="8" width="1" height="1" fill="#bcd0ee"/>'+
-    '<rect x="7" y="8" width="2" height="1" fill="#8aa0c0"/>';
-  document.getElementById('mascot').innerHTML = HERO;
+  var HOTDOG = '<rect x="2" y="3" width="12" height="1" fill="#f0c078"/><rect x="2" y="4" width="12" height="2" fill="#c0442a"/>'+
+    '<rect x="1" y="4" width="1" height="2" fill="#a83420"/><rect x="14" y="4" width="1" height="2" fill="#a83420"/>'+
+    '<rect x="2" y="6" width="12" height="2" fill="#e0a85a"/>'+
+    '<rect x="3" y="4" width="1" height="1" fill="#ffd21e"/><rect x="6" y="5" width="1" height="1" fill="#ffd21e"/><rect x="9" y="4" width="1" height="1" fill="#ffd21e"/><rect x="12" y="5" width="1" height="1" fill="#ffd21e"/>'+
+    '<rect x="5" y="4" width="1" height="1" fill="#3a1810"/><rect x="10" y="4" width="1" height="1" fill="#3a1810"/><rect x="7" y="5" width="2" height="1" fill="#7a2010"/>'+
+    '<rect x="0" y="8" width="2" height="1" fill="#c0442a"/><rect x="14" y="8" width="2" height="1" fill="#c0442a"/>'+
+    '<rect x="0" y="9" width="1" height="1" fill="#fff"/><rect x="15" y="9" width="1" height="1" fill="#fff"/>'+
+    '<rect x="5" y="8" width="1" height="4" fill="#c0442a"/><rect x="10" y="8" width="1" height="4" fill="#c0442a"/>'+
+    '<rect x="4" y="12" width="3" height="2" fill="#4d8cff"/><rect x="9" y="12" width="3" height="2" fill="#4d8cff"/><rect x="4" y="13" width="3" height="1" fill="#fff"/><rect x="9" y="13" width="3" height="1" fill="#fff"/>';
+  var BURGER = '<rect x="3" y="2" width="10" height="1" fill="#f0c078"/><rect x="2" y="3" width="12" height="2" fill="#f0c078"/>'+
+    '<rect x="5" y="3" width="1" height="1" fill="#fff5d0"/><rect x="9" y="3" width="1" height="1" fill="#fff5d0"/>'+
+    '<rect x="2" y="5" width="12" height="1" fill="#6fbf3a"/><rect x="2" y="6" width="12" height="2" fill="#8a4a2a"/>'+
+    '<rect x="2" y="8" width="12" height="1" fill="#ffb020"/><rect x="3" y="9" width="2" height="1" fill="#ffb020"/><rect x="11" y="9" width="2" height="1" fill="#ffb020"/>'+
+    '<rect x="2" y="9" width="12" height="2" fill="#e0a85a"/>'+
+    '<rect x="5" y="6" width="1" height="1" fill="#2a1008"/><rect x="10" y="6" width="1" height="1" fill="#2a1008"/><rect x="7" y="7" width="2" height="1" fill="#2a1008"/>'+
+    '<rect x="4" y="11" width="2" height="2" fill="#3a2a1a"/><rect x="10" y="11" width="2" height="2" fill="#3a2a1a"/>';
+  var FRIES = '<rect x="4" y="2" width="2" height="7" fill="#ffd21e"/><rect x="7" y="1" width="2" height="8" fill="#ffcf3f"/><rect x="10" y="3" width="2" height="6" fill="#ffd21e"/>'+
+    '<rect x="3" y="8" width="10" height="6" fill="#e03030"/><rect x="4" y="8" width="8" height="1" fill="#fff"/>'+
+    '<rect x="5" y="10" width="2" height="2" fill="#fff"/><rect x="9" y="10" width="2" height="2" fill="#fff"/><rect x="6" y="11" width="1" height="1" fill="#2a1008"/><rect x="9" y="11" width="1" height="1" fill="#2a1008"/><rect x="7" y="12" width="2" height="1" fill="#7a2010"/>';
+  var DONUT = '<rect x="4" y="4" width="8" height="8" fill="#d9a05a"/><rect x="3" y="5" width="10" height="6" fill="#d9a05a"/>'+
+    '<rect x="3" y="4" width="10" height="3" fill="#ff9ec7"/><rect x="4" y="3" width="8" height="1" fill="#ff9ec7"/>'+
+    '<rect x="5" y="4" width="1" height="1" fill="#ffd21e"/><rect x="8" y="5" width="1" height="1" fill="#6fbf3a"/><rect x="10" y="4" width="1" height="1" fill="#4d8cff"/>'+
+    '<rect x="6" y="7" width="4" height="3" fill="#2a1a10"/>'+
+    '<rect x="4" y="8" width="1" height="1" fill="#2a1008"/><rect x="11" y="8" width="1" height="1" fill="#2a1008"/>'+
+    '<rect x="4" y="12" width="2" height="2" fill="#3a2a1a"/><rect x="10" y="12" width="2" height="2" fill="#3a2a1a"/>';
+  var SODA = '<rect x="3" y="3" width="10" height="1" fill="#e03030"/><rect x="4" y="4" width="8" height="10" fill="#2ee6c9"/><rect x="4" y="4" width="8" height="1" fill="#c7fff5"/>'+
+    '<rect x="9" y="0" width="1" height="4" fill="#ff5a7a"/>'+
+    '<rect x="6" y="7" width="1" height="2" fill="#2a1008"/><rect x="9" y="7" width="1" height="2" fill="#2a1008"/><rect x="7" y="10" width="2" height="1" fill="#2a1008"/>'+
+    '<rect x="4" y="14" width="2" height="1" fill="#3a2a1a"/><rect x="10" y="14" width="2" height="1" fill="#3a2a1a"/>';
+  document.getElementById('mascot').innerHTML = HOTDOG;
 
-  var TROUPE = [
-    { id:'king1', svg:MUSH }, { id:'king2', svg:STAR }, { id:'king3', svg:BLOCK }, { id:'king4', svg:CLOUDP }
-  ];
-  var DEFAULT_POS = { king1:{l:'4vw',t:'26vh'}, king2:{l:'86vw',t:'20vh'}, king3:{l:'5vw',t:'60vh'}, king4:{l:'85vw',t:'55vh'} };
-  var savedPos = {}; try{ savedPos = JSON.parse(localStorage.getItem('dq_kingdom')||'{}'); }catch(e){ savedPos={}; }
+  var TROUPE = [ { id:'sn1', svg:BURGER }, { id:'sn2', svg:FRIES }, { id:'sn3', svg:DONUT }, { id:'sn4', svg:SODA } ];
+  var DEFAULT_POS = { sn1:{l:'4vw',t:'28vh'}, sn2:{l:'86vw',t:'22vh'}, sn3:{l:'5vw',t:'62vh'}, sn4:{l:'85vw',t:'56vh'} };
+  var savedPos = {}; try{ savedPos = JSON.parse(localStorage.getItem('dq_snack')||'{}'); }catch(e){ savedPos={}; }
   var troupeEl = document.getElementById('troupe');
 
   function toonSay(el, text){ var b=el.querySelector('.toonbubble'); b.textContent=text; b.classList.add('show');
@@ -478,7 +445,7 @@
       if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>6) moved=true;
       el.style.left=(e.clientX-ox)+'px'; el.style.top=(e.clientY-oy)+'px'; });
     function end(e){ if(!dragging) return; dragging=false; el.classList.remove('grab');
-      if(moved){ savedPos[def.id]={l:el.style.left, t:el.style.top}; try{ localStorage.setItem('dq_kingdom', JSON.stringify(savedPos)); }catch(_){} }
+      if(moved){ savedPos[def.id]={l:el.style.left, t:el.style.top}; try{ localStorage.setItem('dq_snack', JSON.stringify(savedPos)); }catch(_){} }
       else { blip(); hopToon(el); toonSay(el, rand(GREET)); } }
     el.addEventListener('pointerup', end);
     el.addEventListener('pointercancel', end);
@@ -495,7 +462,7 @@
     for(var i=0;i<kids.length;i++){ (function(el,d){ setTimeout(function(){ hopToon(el); toonSay(el, rand(MOTIVATE)); }, d*140); })(kids[i], i); } }
 
   var mascot=document.getElementById('mascot'), bubble=document.getElementById('bubble'), bTimer=null;
-  var HOST=["Hiya, hero! 👋","Ready to jump in? ⭐","Wahoo! Let's go! 🎉","You're the champ! 🪙","Grab those coins! 💰","Power-up time! 🍄","To the flagpole! 🏁"];
+  var HOST=["Hiya, buddy! 👋","Ready to chow down on quests? 🌭","Let's-a snack... let's go! 🍔","You're the best! 💛","Relish the day! 😄","Ketchup with your goals! 🍟","Bun-believable! 🌭"];
   function hostSay(txt){ bubble.textContent=txt; bubble.classList.add('show');
     mascot.classList.remove('pop'); void mascot.offsetWidth; mascot.classList.add('pop');
     clearTimeout(bTimer); bTimer=setTimeout(function(){ bubble.classList.remove('show'); },2600); }
@@ -509,12 +476,12 @@
   });
   var tn=document.getElementById('testnotify');
   if(tn){ tn.addEventListener('click', function(){
-    notify("Test Alert","ntfy is connected! You'll get a ping like this when the level is cleared. 🎉","bell","high");
+    notify("Test Alert","ntfy is connected! You'll get a ping like this when all quests are done. 🌭","bell","high");
     alert("Test sent! Check your phone. If nothing arrives, make sure the ntfy app is subscribed to the exact topic and notifications are allowed.");
   }); }
 
   render();
-  setTimeout(function(){ hostSay("Hiya, hero! Ready to jump in? ⭐"); }, 700);
+  setTimeout(function(){ hostSay("Hiya! Ready to chow down on quests? 🌭"); }, 700);
   if(state.broke){ save(); notify("Streak Reset","A day was missed — the daily-quest streak is back to 0. Might be worth a nudge! 💔","broken_heart","default"); }
 })();
 </script>
