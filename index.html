@@ -126,6 +126,18 @@
   .prev-castle .cst{position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:132px; opacity:.92;}
   .prev-castle .g{position:absolute; font-size:14px;} .prev-castle .g1{top:12px; left:14px; color:#ffe08a;} .prev-castle .g2{top:20px; right:16px; color:#ff9ec7;}
 
+  /* Samurai preview */
+  .prev-samurai{background:linear-gradient(#2a2a4a, #6a3a5a 45%, #c86a4a 72%, #e0a860);}
+  .prev-samurai .moon{position:absolute; top:12px; right:16px; width:26px; height:26px; border-radius:50%; background:radial-gradient(circle at 40% 40%, #fff6e0, #ffcf7a); box-shadow:0 0 14px 3px rgba(255,220,150,.5);}
+  .prev-samurai .fj{position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:0; height:0; border-left:44px solid transparent; border-right:44px solid transparent; border-bottom:36px solid #3a3a5e;}
+  .prev-samurai .g{position:absolute; font-size:14px;} .prev-samurai .g1{top:12px; left:14px; color:#ffb3cf;} .prev-samurai .g2{top:22px; right:16px; color:#e0b040;}
+
+  /* Machine Wilds preview */
+  .prev-machine{background:linear-gradient(#2a4a58, #4a6a5a 36%, #c08048 64%, #f0b860);}
+  .prev-machine .sun{position:absolute; top:14px; left:50%; transform:translateX(-50%); width:30px; height:30px; border-radius:50%; background:radial-gradient(circle at 50% 50%, #fff2c0, #f8c060 66%, #e88040); box-shadow:0 0 16px 4px rgba(240,168,72,.5);}
+  .prev-machine .rdg{position:absolute; left:0; right:0; bottom:0; height:34px; background:#2f4a44; clip-path:polygon(0 60%,18% 24%,38% 54%,60% 22%,80% 52%,100% 30%,100% 100%,0 100%);}
+  .prev-machine .g{position:absolute; font-size:14px;} .prev-machine .g1{top:12px; left:14px; color:#8af0e8;} .prev-machine .g2{top:22px; right:16px; color:#4aa86a;}
+
   .foot{margin-top:26px; color:#b9a6e4; font-weight:700; font-size:14px;}
 </style>
 </head>
@@ -423,6 +435,48 @@
         <div class="tname" style="color:#ff6fa8;">PRINCESS CASTLE</div>
         <div class="ttag">A castle full of princesses! 👑</div>
         <span class="play" style="background:#8a5fd0; color:#fff;">▶ Play</span>
+      </div>
+    </a>
+
+    <a class="tile" href="samurai.html" style="border-color:rgba(184,48,48,.6);">
+      <div class="prev prev-samurai">
+        <div class="moon"></div>
+        <div class="fj"></div>
+        <div class="g g1">🍁</div><div class="g g2">⚔️</div>
+        <svg class="mini" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <rect x="4" y="1" width="8" height="2" fill="#2a2a3a"/><rect x="3" y="2" width="10" height="1" fill="#3a3a4a"/><rect x="7" y="0" width="2" height="1" fill="#c8a030"/>
+          <rect x="5" y="3" width="6" height="3" fill="#e8c8a8"/><rect x="6" y="4" width="1" height="1" fill="#2a1810"/><rect x="9" y="4" width="1" height="1" fill="#2a1810"/><rect x="5" y="5" width="6" height="1" fill="#5a3030"/>
+          <rect x="4" y="6" width="8" height="5" fill="#a02828"/><rect x="4" y="7" width="8" height="1" fill="#2a2a3a"/><rect x="4" y="9" width="8" height="1" fill="#2a2a3a"/>
+          <rect x="2" y="6" width="2" height="3" fill="#7a1f1f"/><rect x="12" y="6" width="2" height="3" fill="#7a1f1f"/>
+          <rect x="13" y="3" width="1" height="9" fill="#c0c8d0"/><rect x="12" y="12" width="2" height="1" fill="#8a5a2a"/>
+          <rect x="5" y="11" width="2" height="3" fill="#2a2a3a"/><rect x="9" y="11" width="2" height="3" fill="#2a2a3a"/><rect x="4" y="14" width="3" height="1" fill="#6a4020"/><rect x="9" y="14" width="3" height="1" fill="#6a4020"/>
+        </svg>
+      </div>
+      <div class="meta">
+        <div class="tname" style="color:#e07070;">SAMURAI</div>
+        <div class="ttag">Blades, foxes &amp; falling maple leaves. 🍁</div>
+        <span class="play" style="background:#b83030; color:#fff;">▶ Play</span>
+      </div>
+    </a>
+
+    <a class="tile" href="machine.html" style="border-color:rgba(72,224,208,.6);">
+      <div class="prev prev-machine">
+        <div class="sun"></div>
+        <div class="rdg"></div>
+        <div class="g g1">🏹</div><div class="g g2">💠</div>
+        <svg class="mini" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <rect x="5" y="1" width="6" height="3" fill="#6a3a1a"/><rect x="4" y="2" width="1" height="2" fill="#6a3a1a"/><rect x="11" y="2" width="1" height="2" fill="#6a3a1a"/><rect x="5" y="1" width="6" height="1" fill="#c85030"/>
+          <rect x="5" y="4" width="6" height="3" fill="#e0b088"/><rect x="6" y="5" width="1" height="1" fill="#20282a"/><rect x="9" y="5" width="1" height="1" fill="#20282a"/>
+          <rect x="4" y="4" width="1" height="1" fill="#c83030"/><rect x="11" y="4" width="1" height="2" fill="#48e0d0"/>
+          <rect x="4" y="7" width="8" height="5" fill="#5a7a4a"/><rect x="4" y="8" width="8" height="1" fill="#3a5a34"/><rect x="7" y="7" width="2" height="5" fill="#48e0d0" opacity="0.5"/>
+          <rect x="2" y="6" width="1" height="8" fill="#8a5a2a"/><rect x="2" y="9" width="1" height="1" fill="#e0d0a8"/>
+          <rect x="5" y="12" width="2" height="3" fill="#4a3a2a"/><rect x="9" y="12" width="2" height="3" fill="#4a3a2a"/>
+        </svg>
+      </div>
+      <div class="meta">
+        <div class="tname" style="color:#2ec4b6;">MACHINE WILDS</div>
+        <div class="ttag">A hunter, robot beasts &amp; wild ruins. 🏹</div>
+        <span class="play" style="background:#2ec4b6; color:#06231f;">▶ Play</span>
       </div>
     </a>
 

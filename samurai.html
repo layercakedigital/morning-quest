@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2a2a4a">
+<title>Daily Quest — Samurai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --indigo:#2a2a4a; --indigo2:#1a1a30; --red:#b83030; --red2:#8a1f1f; --gold:#e0b040; --blossom:#ffb3cf; --pampas:#c9b878; --cream:#f2e8d6;
+    --ink:#2a2028; --sub:#6a5a60;
+    --tile:#f7ecd8; --tile-b:#a88a4a;
+    --xp:#b83030; --green:#5aa86a; --greentxt:#d8f0c0;
+    --panel:#241f38; --panel2:#332b52;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; overflow-x:hidden;}
+  body{font-family:'Baloo 2',system-ui,sans-serif; color:var(--ink); min-height:100vh; position:relative;
+    display:flex; justify-content:center; padding:14px 10px 70px; background:#2a2a4a;}
+
+  .bg{position:fixed; inset:0; z-index:-1; overflow:hidden;}
+  .void{position:absolute; inset:0; background:linear-gradient(#2a2a4a 0%, #6a3a5a 40%, #c86a4a 68%, #e0a860 100%);}
+  .moon{position:absolute; top:60px; right:16%; width:74px; height:74px; border-radius:50%; background:radial-gradient(circle at 40% 40%, #fff6e0, #ffe0a0 70%, #ffcf7a); box-shadow:0 0 40px 8px rgba(255,220,150,.4);}
+  .stars{position:absolute; inset:0; animation:drift 50s linear infinite;}
+  .stars::before{content:""; position:absolute; inset:-50%; background-image:radial-gradient(1px 1px at 20% 18%,#fff,transparent),radial-gradient(1px 1px at 60% 12%,#ffe,transparent),radial-gradient(1px 1px at 40% 24%,#fff,transparent),radial-gradient(1px 1px at 82% 20%,#ffd,transparent); background-size:280px 280px; opacity:.7;}
+  @keyframes drift{from{transform:translateY(0)}to{transform:translateY(-24px)}}
+  .fuji{position:absolute; left:50%; bottom:56px; transform:translateX(-50%); width:0; height:0; border-left:150px solid transparent; border-right:150px solid transparent; border-bottom:120px solid #3a3a5e; opacity:.9;}
+  .fuji::before{content:""; position:absolute; left:-40px; top:0; width:80px; height:0; border-left:40px solid transparent; border-right:40px solid transparent; border-bottom:34px solid #e8eefc;}
+  .torii{position:absolute; left:20%; bottom:56px; width:56px; height:70px;}
+  .torii::before{content:""; position:absolute; top:0; left:-6px; right:-6px; height:8px; background:#b83030; border-radius:2px;}
+  .torii::after{content:""; position:absolute; top:12px; left:0; right:0; height:6px; background:#a02828;}
+  .pillar{position:absolute; bottom:0; width:8px; height:64px; background:#b83030;}
+  .pillar.pl{left:6px;} .pillar.pr{right:6px;}
+  .ground{position:absolute; left:0; right:0; bottom:0; height:56px; background:linear-gradient(#7a6a3a,#5a4a26);}
+  .grass{position:absolute; left:0; right:0; bottom:44px; height:26px; background:repeating-linear-gradient(85deg, transparent 0 6px, rgba(201,184,120,.7) 6px 8px); animation:windgrass 4s ease-in-out infinite; transform-origin:bottom;}
+  @keyframes windgrass{0%,100%{transform:skewX(-4deg)}50%{transform:skewX(4deg)}}
+
+  #balloons{position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden;}
+  .leaf{position:absolute; top:-30px; font-size:22px; line-height:1; pointer-events:auto; cursor:pointer; will-change:transform;}
+  .leaf:active{transform:scale(.85);}
+  @keyframes fall{to{transform:translate(-40vw,116vh) rotate(var(--sway));}}
+
+  .bunting{position:fixed; top:0; left:0; right:0; height:8px; z-index:4; background:repeating-linear-gradient(90deg,#b83030 0 14px,#e0b040 14px 28px,#2a2a4a 28px 42px);}
+
+  #troupe{position:fixed; inset:0; z-index:20; pointer-events:none;}
+  .toon{position:fixed; width:56px; height:56px; pointer-events:auto; cursor:grab; touch-action:none; animation:bob 2.8s ease-in-out infinite; filter:drop-shadow(0 4px 5px rgba(0,0,0,.4));}
+  .toon svg{width:100%; height:100%; display:block;}
+  .toon.grab{cursor:grabbing; animation:none; z-index:40;}
+  .toon.hop{animation:hop .5s ease;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes hop{0%{transform:translateY(0)}30%{transform:translateY(-22px) scale(1.1)}60%{transform:translateY(0) scale(.96)}100%{transform:translateY(0)}}
+  .toonbubble{position:absolute; bottom:60px; left:50%; transform:translateX(-50%) scale(.9); white-space:nowrap; max-width:200px; overflow:hidden; text-overflow:ellipsis;
+    background:#f7ecd8; color:var(--ink); font-weight:800; font-size:12px; padding:5px 10px; border-radius:8px; border:2px solid var(--red2); box-shadow:0 3px 0 rgba(0,0,0,.3); opacity:0; transition:.2s; pointer-events:none;}
+  .toonbubble.show{opacity:1; transform:translateX(-50%) scale(1);}
+  .toonbubble::after{content:""; position:absolute; bottom:-7px; left:50%; transform:translateX(-50%); border-left:7px solid transparent; border-right:7px solid transparent; border-top:7px solid #f7ecd8;}
+
+  .wrap{width:100%; max-width:520px; position:relative; z-index:6;}
+  .stage{text-align:center; margin:16px 0 2px; position:relative;}
+  .mascot{width:100px; height:100px; cursor:pointer; display:inline-block; animation:bob 2.6s ease-in-out infinite; filter:drop-shadow(0 5px 5px rgba(0,0,0,.4));}
+  .mascot:active{animation:none;}
+  .mascot.pop{animation:pop .5s ease;}
+  @keyframes pop{0%{transform:scale(1)}30%{transform:scale(1.18) rotate(-6deg)}60%{transform:scale(.94) rotate(5deg)}100%{transform:scale(1)}}
+  .bubble{display:inline-block; max-width:280px; margin:6px auto 0; padding:8px 14px; background:#f7ecd8; color:var(--ink); font-weight:800; font-size:14px; border-radius:8px; position:relative; border:2px solid var(--red2); box-shadow:0 4px 0 rgba(0,0,0,.3); opacity:0; transform:translateY(6px) scale(.96); transition:.2s; pointer-events:none;}
+  .bubble.show{opacity:1; transform:translateY(0) scale(1);}
+  .bubble::after{content:""; position:absolute; top:-8px; left:50%; transform:translateX(-50%); border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:8px solid #f7ecd8;}
+
+  .titlewrap{text-align:center; margin-top:6px;}
+  .title-plate{display:inline-block; background:linear-gradient(var(--red),var(--red2)); border:4px solid var(--cream); border-radius:10px; padding:12px 24px 10px; box-shadow:0 0 0 3px #2a2a4a, 0 8px 0 #5a1414, 0 10px 18px rgba(0,0,0,.5);}
+  .title-plate h1{margin:0; font-family:'Press Start 2P',cursive; font-size:22px; color:#f7ecd8; letter-spacing:1px; text-shadow:2px 2px 0 #5a1414;}
+  .subband{display:inline-block; margin-top:8px; background:var(--indigo); border:2px solid var(--gold); color:#f7ecd8; font-weight:800; letter-spacing:1px; padding:5px 16px; font-size:12px; border-radius:8px; box-shadow:0 3px 0 #14142a;}
+  .subband .spark{color:var(--gold);}
+  .intro{text-align:center; font-weight:800; color:#fff2e0; margin:12px 6px 4px; font-size:15px; text-shadow:0 1px 4px rgba(0,0,0,.5);}
+
+  .streak{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:10px 4px 0; padding:9px 12px; text-align:center; background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--gold); border-radius:10px; color:#f7ecd8; font-weight:800; box-shadow:0 4px 0 #12101f;}
+  .streak.broken{border-color:var(--red);}
+  .streak .flame{font-size:22px; line-height:1;}
+  .streak .num{font-family:'Press Start 2P',cursive; font-size:15px; color:var(--gold);}
+  .streak .lbl{font-size:12.5px; color:#e8d8f0;}
+  .streak .bonus{font-size:12.5px; color:#d8f0c0;}
+  .streak .best{font-size:12px; color:#fff;}
+
+  .scroll{background:linear-gradient(#f9f0dc,#efe2c4); border:4px solid var(--cream); border-radius:12px; padding:14px 12px; margin-top:10px; box-shadow:0 0 0 4px var(--red2), 0 12px 22px rgba(0,0,0,.5);}
+  .xpwrap{margin:2px 4px 12px;}
+  .xprow{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;}
+  .xprow b{font-family:'Press Start 2P',cursive; font-size:12px; color:var(--red2);}
+  .xprow span{font-weight:800; color:var(--sub); font-size:14px;}
+  .xptrack{height:22px; background:#e0d0a8; border:3px solid #a88a4a; border-radius:10px; overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,.2);}
+  .xpfill{height:100%; width:0%; border-radius:6px; background:linear-gradient(90deg,#e0b040,#b83030,#2a2a4a); background-size:200% 100%; animation:rainbow 4s linear infinite; transition:width .45s cubic-bezier(.3,1.2,.5,1);}
+  @keyframes rainbow{to{background-position:200% 0}}
+
+  .quest{display:flex; align-items:center; gap:10px; background:linear-gradient(var(--tile),#efe0bc); border:3px solid var(--tile-b); border-radius:10px; padding:9px 10px; margin:9px 2px; cursor:pointer; user-select:none; box-shadow:0 3px 0 rgba(0,0,0,.15); transition:transform .08s ease, opacity .2s;}
+  .quest:active{transform:scale(.98);}
+  .quest .emoji{font-size:26px; width:38px; text-align:center; flex:none;}
+  .quest .txt{flex:1; min-width:0;}
+  .quest .name{font-weight:800; font-size:16px; color:var(--ink); line-height:1.1; text-transform:uppercase; letter-spacing:.3px;}
+  .quest .name .flag2{font-size:10px; color:var(--red2); font-weight:800; letter-spacing:.5px;}
+  .quest .desc{font-size:12.5px; color:var(--sub); font-weight:600; line-height:1.2;}
+  .quest .xp{font-family:'Press Start 2P',cursive; font-size:11px; color:var(--xp); flex:none; white-space:nowrap;}
+  .box{flex:none; width:30px; height:30px; border-radius:6px; border:3px solid var(--red2); background:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px; color:#fff; transition:.15s;}
+  .quest.done{opacity:.74;}
+  .quest.done .name, .quest.done .desc{text-decoration:line-through; text-decoration-color:rgba(42,32,40,.5);}
+  .quest.done .box{background:var(--green); border-color:#3a8a4a; transform:scale(1.05);}
+  .quest.done .box::after{content:"✓";}
+
+  .footer{display:flex; gap:10px; align-items:stretch; margin:14px 4px 2px;}
+  .reward{flex:1; background:linear-gradient(var(--panel2),var(--panel)); border:2px solid var(--gold); border-radius:10px; color:#f7ecd8; text-align:center; padding:10px 8px; box-shadow:0 4px 0 #12101f;}
+  .reward .lbl{font-family:'Press Start 2P',cursive; font-size:10px; color:var(--gold); letter-spacing:.5px;}
+  .reward .big{font-family:'Press Start 2P',cursive; font-size:16px; color:#fff; margin:8px 0 4px;}
+  .reward .unlock{font-weight:800; font-size:12px; color:#d8f0c0;}
+  .cheer{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f7ecd8; border:2px solid var(--red2); border-radius:10px; text-align:center; padding:10px; font-weight:800; color:var(--ink); font-size:14px;}
+  .cheer .tent{font-size:32px; line-height:1;}
+
+  .reset{display:block; margin:12px auto 0; background:none; border:none; color:#fff2e0; font-weight:800; font-size:13px; opacity:.85; text-decoration:underline; cursor:pointer;}
+
+  .soundbtn{position:fixed; top:14px; right:10px; z-index:100; background:var(--indigo); color:#f7ecd8; border:2px solid var(--gold); border-radius:20px; padding:6px 12px; font-family:'Baloo 2'; font-weight:800; font-size:13px; cursor:pointer; box-shadow:0 3px 0 #14142a;}
+
+  .overlay{position:fixed; inset:0; background:rgba(20,16,32,.85); display:none; align-items:center; justify-content:center; z-index:80; padding:24px; text-align:center;}
+  .overlay.show{display:flex;}
+  .winbox{background:linear-gradient(#f9f0dc,#efe0bc); border:5px solid var(--red2); border-radius:12px; padding:24px 22px; max-width:360px; box-shadow:0 0 40px rgba(224,176,64,.6);}
+  .winbox .d{font-size:56px;}
+  .winbox h2{font-family:'Press Start 2P',cursive; font-size:14px; color:var(--red); margin:8px 0; text-shadow:2px 2px 0 #ecd9a0;}
+  .winbox p{font-weight:800; color:var(--sub); font-size:15px; margin:6px 0 16px;}
+  .winbox .go{font-family:'Baloo 2'; font-weight:800; font-size:16px; color:#f7ecd8; background:linear-gradient(var(--red),var(--red2)); border:3px solid #5a1414; border-radius:10px; padding:11px 24px; cursor:pointer; box-shadow:0 4px 0 #5a1414;}
+
+  .confetti{position:fixed; width:9px; height:14px; z-index:90; pointer-events:none; border-radius:2px;}
+</style>
+</head>
+<body>
+<a href="./" style="position:fixed;top:14px;left:10px;z-index:200;background:#2a2a4a;color:#f7ecd8;border:2px solid #e0b040;border-radius:20px;padding:5px 11px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 3px 0 #14142a;">🏠 Worlds</a>
+<div class="bg">
+  <div class="void"></div>
+  <div class="stars"></div>
+  <div class="moon"></div>
+  <div class="fuji"></div>
+  <div class="torii"><span class="pillar pl"></span><span class="pillar pr"></span></div>
+  <div class="ground"></div>
+  <div class="grass"></div>
+</div>
+<div class="bunting"></div>
+<div id="balloons"></div>
+<div id="troupe"></div>
+
+<button class="soundbtn" id="soundbtn">🔊 Music</button>
+
+<div class="wrap">
+  <div class="stage">
+    <svg class="mascot" id="mascot" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-label="samurai"></svg>
+    <div class="bubble" id="bubble"></div>
+  </div>
+
+  <div class="titlewrap">
+    <div class="title-plate"><h1>DAILY QUEST</h1></div>
+    <div><span class="subband"><span class="spark">🍁</span> WAY OF THE WIND <span class="spark">🍁</span></span></div>
+  </div>
+
+  <div class="intro">Complete your quests to unlock all-day tech! 🍁</div>
+  <div style="text-align:center;margin:10px 6px 0;font-weight:800;font-size:12.5px;color:#f7ecd8;background:rgba(20,16,32,.55);border:1px dashed rgba(224,176,64,.6);border-radius:12px;padding:7px 12px;">👆 Tap the companions to chat — press &amp; hold to drag them anywhere!</div>
+
+  <div class="streak" id="streak"></div>
+
+  <div class="scroll">
+    <div class="xpwrap">
+      <div class="xprow"><b>QUEST XP</b><span id="xplabel">0 / 200 XP</span></div>
+      <div class="xptrack"><div class="xpfill" id="xpfill"></div></div>
+    </div>
+    <div id="quests"></div>
+  </div>
+
+  <div class="footer">
+    <div class="reward">
+      <div class="lbl">GRAND PRIZE</div>
+      <div class="big">200 XP</div>
+      <div class="unlock" id="unlockmsg">🎮 ALL-DAY TECH UNLOCKED!</div>
+    </div>
+    <div class="cheer">
+      <div class="tent">⚔️</div>
+      <div id="cheertxt">The wind guides you.</div>
+    </div>
+  </div>
+
+  <button class="reset" id="reset">↺ Clear today’s checkmarks</button>
+  <button class="reset" id="testnotify" style="opacity:.6; font-size:12px;">🔔 Send test notification</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="winbox">
+    <div class="d">⚔️🍁</div>
+    <h2>HONOR RESTORED!</h2>
+    <p id="winmsg">200 XP earned — All-Day Tech Unlocked! The wind sings your name. 🍁</p>
+    <button class="go" id="closewin">🎮 Let's Play!</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var QUESTS = [
+    {e:"🪥", n:"Brush Your Teeth",   d:"Keep that smile legendary.",        xp:5},
+    {e:"🧹", n:"Brush Your Hair",    d:"Tame the mane!",                     xp:5},
+    {e:"🧴", n:"Put On Deodorant",   d:"Stay fresh. Be your best.",          xp:5},
+    {e:"👕", n:"Change Your Clothes", d:"New day, new vibes.",  xp:5},
+    {e:"📖", n:"Read For 30 Minutes", d:"Feed your mind. Level up.",         xp:50},
+    {e:"🛏️", n:"Make Your Bed",      d:"Small effort, big impact.",          xp:10},
+    {e:"🫧", n:"Do The Dishes",      d:"Be a hero. Leave no mess behind.",   xp:25},
+    {e:"🧺", n:"Fold Laundry",       d:"Tidy now, thank yourself later.", xp:20, flag:"IF AVAILABLE"},
+    {e:"🎹", n:"Piano Practice — 15 Min", d:"Practice makes progress. Keep the music alive!", xp:30},
+    {e:"🎨", n:"Be A Creator",       d:"Create and publish something today! Share your gift with the world.", xp:45}
+  ];
+  var GOAL = QUESTS.reduce(function(s,q){return s+q.xp;},0);
+  var KEY = "dailyQuest";
+  var CHEERS = ["The wind guides you.","Drawing the blade… ⚔️","A worthy start. 🍁","The clan honors you. 🏯","One duel remains. 🌸","HONOR RESTORED! 🎉"];
+  var MOTIVATE = ["A clean strike! ⚔️","Honor in every deed. 🍁","The wind favors you! 🌸","Well fought! 🏯","Bushido! 🗡️","Steady and true. 🎯","A ghost's grace. 🌙","Onward! 🍁","The blade sings. ⚔️","Discipline pays. 💮"];
+  var GREET = ["Well met, traveler. 🍁","Ready your resolve. ⚔️","The path is yours. 🏯","Breathe with the wind. 🌸","I stand with you. 🗡️","Drag me along! ✨","A moment of calm. 🍵","For honor! 🌙","Steady your heart. 💮","The isle watches. 🌾"];
+
+  function pad(n){ return (n<10?'0':'')+n; }
+  function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function parseYmd(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function dayDiff(a,b){ return Math.round((parseYmd(a)-parseYmd(b))/86400000); }
+  function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+  var REQUIRED = [0,1,2,3,5];
+
+  function streakBonus(s){ return s>0 ? s*10 : 0; }
+  function milestoneFor(s){
+    if(s===3)  return "🔥 3-Day Streak — Ronin!";
+    if(s===7)  return "🏅 7-Day Streak — Bushi!";
+    if(s===14) return "⚡ 14-Day Streak — Blade Master!";
+    if(s===30) return "👑 30-Day Streak — Legend of the Isle!";
+    if(s>30 && s%10===0) return "🌟 "+s+"-Day Streak — Legendary!";
+    return "";
+  }
+
+  var NOTIFY = { ntfyTopic:"mq-lcd-9f4k2x7q", slackWebhook:"" };
+  function notify(title, message, tags, priority){
+    var safeTitle = String(title).replace(/[^\x00-\xFF]/g, '').trim() || 'Daily Quest';
+    if(NOTIFY.ntfyTopic){ try{ fetch('https://ntfy.sh/'+NOTIFY.ntfyTopic, {method:'POST', body:message,
+      headers:{ 'Title':safeTitle, 'Tags':tags||'', 'Priority':priority||'default' }}); }catch(e){} }
+    if(NOTIFY.slackWebhook){ try{ fetch(NOTIFY.slackWebhook, {method:'POST', mode:'no-cors',
+      headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+      body:'payload='+encodeURIComponent(JSON.stringify({text:title+' — '+message}))}); }catch(e){} }
+  }
+
+  var soundOn = (localStorage.getItem('dq_sound')||'on')==='on';
+  var audio = { ctx:null, master:null, timer:null, step:0 };
+  var MELODY = [659.25,587.33,523.25,587.33, 659.25,783.99,880.00,783.99, 659.25,587.33,523.25,440.00, 523.25,587.33,523.25,0];
+  var BASS   = [130.81,130.81,130.81,130.81,196.00,196.00,130.81,130.81];
+  function ensureCtx(){
+    if(!audio.ctx){ var AC = window.AudioContext||window.webkitAudioContext; if(!AC) return;
+      audio.ctx = new AC(); audio.master = audio.ctx.createGain(); audio.master.gain.value = 0.62; audio.master.connect(audio.ctx.destination); }
+    if(audio.ctx.state==='suspended'){ try{ audio.ctx.resume(); }catch(e){} }
+  }
+  function hit(freq, dur, type, vol){
+    if(!audio.ctx) return;
+    var t=audio.ctx.currentTime, o=audio.ctx.createOscillator(), g=audio.ctx.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(audio.master); o.start(t); o.stop(t+dur+0.03);
+  }
+  function musicTick(){
+    if(!soundOn||!audio.ctx) return;
+    var f=MELODY[audio.step]; if(f){ hit(f,0.22,'triangle',0.05); }
+    if(audio.step%2===0){ var b=BASS[audio.step/2]; if(b) hit(b,0.3,'sine',0.06); }
+    audio.step=(audio.step+1)%MELODY.length;
+  }
+  function startMusic(){ ensureCtx(); if(audio.ctx && !audio.timer){ audio.timer=setInterval(musicTick,180); } }
+  function stopMusic(){ if(audio.timer){ clearInterval(audio.timer); audio.timer=null; } }
+  function blip(){ if(!soundOn) return; ensureCtx(); hit(880,0.09,'triangle',0.05); }
+  function slash(){ if(!soundOn) return; ensureCtx(); if(!audio.ctx) return; var t=audio.ctx.currentTime, o=audio.ctx.createOscillator(), g=audio.ctx.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(1600,t); o.frequency.exponentialRampToValueAtTime(300,t+.1); g.gain.setValueAtTime(.1,t); g.gain.exponentialRampToValueAtTime(.001,t+.12); o.connect(g); g.connect(audio.master); o.start(); o.stop(t+.13); }
+  var soundBtn=document.getElementById('soundbtn');
+  function paintSound(){ soundBtn.textContent=(soundOn?'🔊':'🔇')+' Music'; }
+  paintSound();
+  soundBtn.addEventListener('click', function(){ soundOn=!soundOn; localStorage.setItem('dq_sound', soundOn?'on':'off'); paintSound();
+    if(soundOn){ startMusic(); blip(); } else { stopMusic(); } });
+  var firstGesture=function(){ if(soundOn) startMusic(); window.removeEventListener('pointerdown',firstGesture); };
+  window.addEventListener('pointerdown', firstGesture);
+
+  var state = load();
+  var qEl = document.getElementById('quests');
+  function load(){
+    var s; try{ s = JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ s=null; }
+    if(!s) s={};
+    if(!s.done) s.done={};
+    if(typeof s.streak!=='number') s.streak=0;
+    if(typeof s.best!=='number')   s.best=0;
+    s.lastComplete = s.lastComplete || null;
+    s.notifiedDate = s.notifiedDate || null;
+    s.broke = false;
+    var today = ymd(new Date());
+    if(s.day !== today){ s.done={}; s.day=today; }
+    if(s.lastComplete && s.streak>0 && dayDiff(today, s.lastComplete) >= 2){ s.streak = 0; s.broke = true; }
+    return s;
+  }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  function render(){
+    qEl.innerHTML = "";
+    QUESTS.forEach(function(q,i){
+      var done = !!state.done[i];
+      var row = document.createElement('div');
+      row.className = "quest"+(done?" done":"");
+      row.innerHTML = '<div class="emoji">'+q.e+'</div>'+
+        '<div class="txt"><div class="name">'+q.n+([0,1,2,3,5].indexOf(i)>=0?' <span style="font-size:9px;color:#fff;background:#d02a2a;padding:1px 5px;border-radius:6px;vertical-align:middle;letter-spacing:.4px;">REQUIRED</span>':'')+(q.flag?' <span class="flag2">('+q.flag+')</span>':'')+'</div>'+
+        '<div class="desc">'+q.d+'</div></div>'+
+        '<div class="xp">+'+q.xp+' XP</div><div class="box"></div>';
+      row.addEventListener('click', function(){ toggle(i); });
+      qEl.appendChild(row);
+    });
+    updateXP(); renderStreak();
+  }
+  function renderStreak(){
+    var el = document.getElementById('streak');
+    var s = state.streak||0, best = state.best||0;
+    var bestTag = best>0 ? '<span class="best">🏆 Best: '+best+'</span>' : '';
+    if(s>0){ el.className='streak'; el.innerHTML='<span class="flame">🔥</span><span class="num">'+s+'</span><span class="lbl">day streak</span><span class="bonus">+'+streakBonus(s)+' bonus XP</span>'+bestTag; }
+    else if(state.broke){ el.className='streak broken'; el.innerHTML='<span class="flame">💔</span><span class="lbl">Streak reset — finish all quests today to start a new one! 💪</span>'+bestTag; }
+    else { el.className='streak'; el.innerHTML='<span class="flame">🔥</span><span class="lbl">Finish all quests today to start your streak!</span>'+bestTag; }
+  }
+  function toggle(i){
+    var wasComplete = isComplete();
+    var nowDone = !state.done[i];
+    state.done[i] = nowDone; save();
+    qEl.children[i].classList.toggle('done', nowDone);
+    updateXP();
+    if(nowDone){ slash(); toonReact(rand(MOTIVATE)); }
+    if(!wasComplete && isComplete()){
+      var r = awardStreak(); renderStreak(); celebrate(r);
+      var today = ymd(new Date());
+      if(state.notifiedDate !== today){
+        state.notifiedDate = today; save();
+        var msg = "Finished all daily quests! 🎉";
+        if(state.streak>0) msg += " "+state.streak+"-day streak (+"+streakBonus(state.streak)+" bonus XP).";
+        var ms = milestoneFor(state.streak); if(ms) msg += " "+ms;
+        notify("Honor Restored! Quests Complete", msg, "tada,crossed_swords", "high");
+      }
+    }
+  }
+  function awardStreak(){
+    var today = ymd(new Date());
+    if(state.lastComplete === today){ return {streak:state.streak, bonus:streakBonus(state.streak), ms:""}; }
+    if(state.lastComplete && dayDiff(today, state.lastComplete) === 1){ state.streak += 1; } else { state.streak = 1; }
+    state.lastComplete = today; state.broke = false;
+    if(state.streak > state.best) state.best = state.streak;
+    save();
+    return {streak:state.streak, bonus:streakBonus(state.streak), ms:milestoneFor(state.streak)};
+  }
+  function total(){ var t=0; QUESTS.forEach(function(q,i){ if(state.done[i]) t+=q.xp; }); return t; }
+  function isComplete(){ return QUESTS.every(function(q,i){ return state.done[i]; }); }
+  function updateXP(){
+    var t = total();
+    document.getElementById('xpfill').style.width = Math.min(100, Math.round(t/GOAL*100))+"%";
+    document.getElementById('xplabel').textContent = t+" / "+GOAL+" XP";
+    var doneCount = QUESTS.filter(function(q,i){return state.done[i];}).length;
+    var idx = Math.min(CHEERS.length-1, doneCount); if(isComplete()) idx = CHEERS.length-1;
+    document.getElementById('cheertxt').textContent = CHEERS[idx];
+    var ul=document.getElementById('unlockmsg');
+    if(ul){ if(isComplete()){ ul.innerHTML='🔓 ALL-DAY TECH UNLOCKED!'; ul.style.color=''; }
+      else { var rb=[0,1,2,3,5].filter(function(k){return !state.done[k];}).length;
+        ul.innerHTML = rb>0 ? '🔒 Required basics: '+rb+' left' : '🔒 Almost — finish all quests';
+        ul.style.color='#ffd7d7'; } }
+  }
+  function celebrate(r){
+    var p = document.getElementById('winmsg');
+    if(p && r){
+      var line = '200 XP earned — All-Day Tech Unlocked!';
+      if(r.streak>0) line += ' 🔥 '+r.streak+'-day streak (+'+r.bonus+' bonus XP).';
+      if(r.ms) line += ' '+r.ms;
+      line += ' The wind sings your name. 🍁'; p.textContent = line;
+    }
+    document.getElementById('overlay').classList.add('show');
+    allToonsCheer();
+    for(var i=0;i<120;i++) confetti(window.innerWidth*Math.random(), -10);
+  }
+  function confetti(x,y){
+    var c = document.createElement('div'); c.className='confetti';
+    var colors=['#b83030','#e0b040','#2a2a4a','#ffb3cf','#c9b878','#5aa86a'];
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=x+'px'; c.style.top=y+'px';
+    var dur=2.4+Math.random()*2, dx=(Math.random()*200-100);
+    c.style.transition='transform '+dur+'s linear, opacity '+dur+'s linear';
+    document.body.appendChild(c);
+    requestAnimationFrame(function(){ c.style.transform='translate('+dx+'px,'+(window.innerHeight+40)+'px) rotate('+(Math.random()*720-360)+'deg)'; c.style.opacity='0'; });
+    setTimeout(function(){ c.remove(); }, dur*1000+100);
+  }
+
+  var noteLayer=document.getElementById('balloons');
+  var GLYPHS=['🍁','🍂','🌸','🍁','🌾','🍁'];
+  function spawnLeaf(){
+    if(document.hidden || noteLayer.children.length>4) return;
+    var b=document.createElement('div'); b.className='leaf'; b.textContent=rand(GLYPHS);
+    b.style.left=(20+Math.random()*76)+'vw';
+    b.style.setProperty('--sway',(Math.random()*40-20)+'deg');
+    b.style.animation='fall '+(8+Math.random()*5)+'s linear forwards';
+    b.addEventListener('click', function(){ blip(); var r=b.getBoundingClientRect();
+      for(var i=0;i<12;i++) confetti(r.left+r.width/2, r.top+r.height/2); b.remove(); });
+    b.addEventListener('animationend', function(){ b.remove(); });
+    noteLayer.appendChild(b);
+  }
+  setInterval(spawnLeaf, 2400); setTimeout(spawnLeaf, 800);
+
+  /* ===== The samurai & companions (all original, feudal-Japan setting) ===== */
+  var SAMURAI = '<rect x="4" y="1" width="8" height="2" fill="#2a2a3a"/><rect x="3" y="2" width="10" height="1" fill="#3a3a4a"/><rect x="7" y="0" width="2" height="1" fill="#c8a030"/>'+
+    '<rect x="5" y="3" width="6" height="3" fill="#e8c8a8"/><rect x="6" y="4" width="1" height="1" fill="#2a1810"/><rect x="9" y="4" width="1" height="1" fill="#2a1810"/><rect x="5" y="5" width="6" height="1" fill="#5a3030"/>'+
+    '<rect x="4" y="6" width="8" height="5" fill="#a02828"/><rect x="4" y="7" width="8" height="1" fill="#2a2a3a"/><rect x="4" y="9" width="8" height="1" fill="#2a2a3a"/>'+
+    '<rect x="2" y="6" width="2" height="3" fill="#7a1f1f"/><rect x="12" y="6" width="2" height="3" fill="#7a1f1f"/>'+
+    '<rect x="13" y="3" width="1" height="9" fill="#c0c8d0"/><rect x="12" y="12" width="2" height="1" fill="#8a5a2a"/>'+
+    '<rect x="5" y="11" width="2" height="3" fill="#2a2a3a"/><rect x="9" y="11" width="2" height="3" fill="#2a2a3a"/><rect x="4" y="14" width="3" height="1" fill="#6a4020"/><rect x="9" y="14" width="3" height="1" fill="#6a4020"/>';
+  var FOX = '<rect x="3" y="3" width="2" height="2" fill="#e8944a"/><rect x="11" y="3" width="2" height="2" fill="#e8944a"/><rect x="4" y="4" width="1" height="1" fill="#2a1810"/><rect x="11" y="4" width="1" height="1" fill="#2a1810"/>'+
+    '<rect x="4" y="4" width="8" height="4" fill="#f0a860"/><rect x="5" y="6" width="6" height="2" fill="#fff"/>'+
+    '<rect x="6" y="5" width="1" height="1" fill="#2a1810"/><rect x="9" y="5" width="1" height="1" fill="#2a1810"/><rect x="7" y="6" width="2" height="1" fill="#2a1810"/>'+
+    '<rect x="4" y="9" width="8" height="4" fill="#f0a860"/><rect x="5" y="11" width="6" height="2" fill="#fff"/>'+
+    '<rect x="4" y="13" width="2" height="1" fill="#e8944a"/><rect x="10" y="13" width="2" height="1" fill="#e8944a"/>'+
+    '<rect x="12" y="9" width="2" height="2" fill="#f0a860"/><rect x="13" y="7" width="1" height="2" fill="#fff"/>';
+  var ARCHER = '<rect x="6" y="0" width="4" height="1" fill="#2a2a3a"/><rect x="5" y="1" width="6" height="1" fill="#2a2a3a"/>'+
+    '<rect x="5" y="2" width="6" height="4" fill="#e8c8a8"/><rect x="6" y="3" width="1" height="1" fill="#2a1810"/><rect x="9" y="3" width="1" height="1" fill="#2a1810"/>'+
+    '<rect x="4" y="6" width="8" height="6" fill="#3a7a4a"/><rect x="4" y="8" width="8" height="1" fill="#2a5a36"/>'+
+    '<rect x="14" y="1" width="1" height="13" fill="#8a5a2a"/><rect x="13" y="0" width="1" height="1" fill="#8a5a2a"/><rect x="13" y="14" width="1" height="1" fill="#8a5a2a"/>'+
+    '<rect x="5" y="12" width="2" height="2" fill="#2a3a2a"/><rect x="9" y="12" width="2" height="2" fill="#2a3a2a"/>';
+  var MONK = '<rect x="3" y="2" width="10" height="1" fill="#c8a860"/><rect x="4" y="1" width="8" height="1" fill="#c8a860"/><rect x="2" y="3" width="12" height="1" fill="#b89850"/>'+
+    '<rect x="5" y="4" width="6" height="2" fill="#c8a888"/><rect x="6" y="4" width="1" height="1" fill="#2a1810"/><rect x="9" y="4" width="1" height="1" fill="#2a1810"/>'+
+    '<rect x="4" y="6" width="8" height="7" fill="#b87838"/><rect x="7" y="6" width="2" height="7" fill="#a06828"/>'+
+    '<rect x="2" y="2" width="1" height="11" fill="#8a5a2a"/><rect x="1" y="1" width="3" height="1" fill="#c8a030"/>'+
+    '<rect x="5" y="13" width="2" height="1" fill="#c8a888"/><rect x="9" y="13" width="2" height="1" fill="#c8a888"/>';
+  var RONIN = '<rect x="4" y="1" width="8" height="2" fill="#2a2020"/><rect x="7" y="0" width="2" height="1" fill="#2a2020"/>'+
+    '<rect x="5" y="3" width="6" height="3" fill="#e8c8a8"/><rect x="6" y="4" width="1" height="1" fill="#2a1810"/><rect x="9" y="4" width="1" height="1" fill="#2a1810"/><rect x="5" y="5" width="6" height="1" fill="#3a2a2a"/>'+
+    '<rect x="4" y="6" width="8" height="5" fill="#2f4a7a"/><rect x="4" y="7" width="8" height="1" fill="#1a2a4a"/><rect x="4" y="9" width="8" height="1" fill="#1a2a4a"/>'+
+    '<rect x="2" y="6" width="2" height="3" fill="#243a62"/><rect x="12" y="6" width="2" height="3" fill="#243a62"/>'+
+    '<rect x="13" y="3" width="1" height="9" fill="#c0c8d0"/><rect x="12" y="12" width="2" height="1" fill="#8a5a2a"/>'+
+    '<rect x="5" y="11" width="2" height="3" fill="#2a2a3a"/><rect x="9" y="11" width="2" height="3" fill="#2a2a3a"/>';
+  document.getElementById('mascot').innerHTML = SAMURAI;
+
+  var TROUPE = [ { id:'sa1', svg:FOX }, { id:'sa2', svg:ARCHER }, { id:'sa3', svg:MONK }, { id:'sa4', svg:RONIN } ];
+  var DEFAULT_POS = { sa1:{l:'4vw',t:'30vh'}, sa2:{l:'86vw',t:'24vh'}, sa3:{l:'5vw',t:'62vh'}, sa4:{l:'85vw',t:'56vh'} };
+  var savedPos = {}; try{ savedPos = JSON.parse(localStorage.getItem('dq_samurai')||'{}'); }catch(e){ savedPos={}; }
+  var troupeEl = document.getElementById('troupe');
+
+  function toonSay(el, text){ var b=el.querySelector('.toonbubble'); b.textContent=text; b.classList.add('show');
+    clearTimeout(el._t); el._t=setTimeout(function(){ b.classList.remove('show'); }, 2600); }
+  function hopToon(el){ el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop'); }
+
+  TROUPE.forEach(function(def, idx){
+    var el=document.createElement('div'); el.className='toon'; el.dataset.id=def.id;
+    el.style.animationDelay=(idx*0.4)+'s';
+    var pos = savedPos[def.id] || DEFAULT_POS[def.id];
+    el.style.left = pos.l; el.style.top = pos.t;
+    el.innerHTML = '<svg viewBox="0 0 16 16" shape-rendering="crispEdges">'+def.svg+'</svg><div class="toonbubble"></div>';
+    troupeEl.appendChild(el);
+    var dragging=false, moved=false, sx=0, sy=0, ox=0, oy=0;
+    el.addEventListener('pointerdown', function(e){ dragging=true; moved=false; sx=e.clientX; sy=e.clientY;
+      var r=el.getBoundingClientRect(); ox=e.clientX-r.left; oy=e.clientY-r.top; el.classList.add('grab'); try{ el.setPointerCapture(e.pointerId); }catch(_){} });
+    el.addEventListener('pointermove', function(e){ if(!dragging) return;
+      if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>6) moved=true;
+      el.style.left=(e.clientX-ox)+'px'; el.style.top=(e.clientY-oy)+'px'; });
+    function end(e){ if(!dragging) return; dragging=false; el.classList.remove('grab');
+      if(moved){ savedPos[def.id]={l:el.style.left, t:el.style.top}; try{ localStorage.setItem('dq_samurai', JSON.stringify(savedPos)); }catch(_){} }
+      else { blip(); hopToon(el); toonSay(el, rand(GREET)); } }
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  });
+
+  function toonReact(text){
+    var kids=troupeEl.children; if(!kids.length) return;
+    var el=kids[Math.floor(Math.random()*kids.length)];
+    hopToon(el); toonSay(el, text);
+    var r=el.getBoundingClientRect();
+    for(var i=0;i<10;i++) confetti(r.left+r.width/2, r.top+r.height/2);
+  }
+  function allToonsCheer(){ var kids=troupeEl.children;
+    for(var i=0;i<kids.length;i++){ (function(el,d){ setTimeout(function(){ hopToon(el); toonSay(el, rand(MOTIVATE)); }, d*140); })(kids[i], i); } }
+
+  var mascot=document.getElementById('mascot'), bubble=document.getElementById('bubble'), bTimer=null;
+  var HOST=["Well met, traveler. 🍁","Steady your resolve. ⚔️","The wind will guide us. 🌸","Honor the day. 🏯","Breathe, then begin. 🍵","A calm mind, a sure blade. 🗡️","The isle believes in you. 🌙"];
+  function hostSay(txt){ bubble.textContent=txt; bubble.classList.add('show');
+    mascot.classList.remove('pop'); void mascot.offsetWidth; mascot.classList.add('pop');
+    clearTimeout(bTimer); bTimer=setTimeout(function(){ bubble.classList.remove('show'); },2600); }
+  mascot.addEventListener('click', function(){ blip(); hostSay(rand(HOST)); });
+
+  document.getElementById('closewin').addEventListener('click', function(){ document.getElementById('overlay').classList.remove('show'); });
+  document.getElementById('reset').addEventListener('click', function(){
+    if(confirm('Clear today’s checkmarks? (Your streak and best score are kept.)')){
+      state.done={}; state.day=ymd(new Date()); state.notifiedDate=null; save(); render();
+    }
+  });
+  var tn=document.getElementById('testnotify');
+  if(tn){ tn.addEventListener('click', function(){
+    notify("Test Alert","ntfy is connected! You'll get a ping like this when all quests are done. 🍁","bell","high");
+    alert("Test sent! Check your phone. If nothing arrives, make sure the ntfy app is subscribed to the exact topic and notifications are allowed.");
+  }); }
+
+  render();
+  setTimeout(function(){ hostSay("Well met, traveler. The wind will guide us. 🍁"); }, 700);
+  if(state.broke){ save(); notify("Streak Reset","A day was missed — the daily-quest streak is back to 0. Might be worth a nudge! 💔","broken_heart","default"); }
+})();
+</script>
+</body>
+</html>
+<!-- end -->
